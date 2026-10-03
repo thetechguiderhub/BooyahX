@@ -2,3 +2,11 @@
 .env.*
 !.env.example
 data/*.db
+data/*.db-shm
+data/*.db-wal
+data/backups/
+data/*.log
+*.log
+seed/
+.vercel
+.env*

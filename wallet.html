@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wallet — BOOYAHX</title>
+  <link rel="icon" href="assets/branding/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/branding/booyahx-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/branding/booyahx-icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/branding/booyahx-icon-512.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/branding/apple-touch-icon.png">
+  <title>BooyahX — Wallet</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -14,7 +19,7 @@
   <nav class="navbar" id="navbar">
     <div class="container-wide">
       <a href="index.html" class="nav-brand">
-        <span class="logo-icon">BX</span>
+        <img class="logo-icon" src="assets/branding/booyahx-logo.png" alt="BooyahX" width="32" height="32">
         BOOYAHX
       </a>
       <ul class="nav-links">
@@ -30,7 +35,7 @@
       <div class="nav-actions">
         <button id="lang-toggle" class="btn btn-outline btn-sm" type="button">اردو</button>
         <div class="nav-balance">
-          <span class="coin-icon">C</span>
+          <img class="coin-icon coin-ic-nav" src="assets/branding/bx-coin-small.png" alt="BX Coin" width="16" height="16">
           <span id="nav-balance-value">0</span>
         </div>
         <a href="profile.html" class="nav-user">
@@ -81,11 +86,11 @@
 
     <main class="main-content">
       <div class="wallet-balance-card">
-        <div class="balance-label">Available Balance</div>
-        <div class="balance-amount"><span id="wallet-balance">—</span> Coins</div>
+        <div class="balance-label">BX COINS BALANCE</div>
+        <div class="balance-amount"><img class="coin-ic" src="assets/branding/bx-coin.png" alt="BX Coin"><span id="wallet-balance">—</span> BX Coins</div>
         <div class="balance-value" id="wallet-reserved"></div>
         <div class="wallet-actions">
-          <button class="btn btn-primary" id="btn-show-deposit">ADD COINS</button>
+          <button class="btn btn-primary" id="btn-show-deposit">ADD BX COINS</button>
           <button class="btn btn-outline" id="btn-show-withdraw">WITHDRAW</button>
         </div>
       </div>
@@ -93,15 +98,15 @@
       <!-- SIGN-IN GATE (real session check — no fake data shown) -->
       <div class="card" id="signin-gate" style="display:none; text-align:center; padding:var(--space-xl);">
         <h3>SIGN IN REQUIRED</h3>
-        <p style="color:var(--text-muted);">Sign in to deposit or withdraw coins.</p>
+        <p style="color:var(--text-muted);">Sign in to deposit or withdraw BX Coins.</p>
         <a href="signin.html" class="btn btn-primary">Sign In</a>
       </div>
 
       <!-- DEPOSIT (backend-configured methods only) -->
       <div class="card" id="deposit-card" style="display:none; margin-bottom: var(--space-xl);">
-        <h3 style="margin-bottom: var(--space-lg);">Deposit Coins</h3>
+        <h3 style="margin-bottom: var(--space-lg);">Deposit BX Coins</h3>
         <p style="color:var(--text-muted); font-size:.85rem; margin-bottom:var(--space-lg);">
-          Deposits are verified manually by staff. Coins are added only after verification — never automatically.
+          Deposits are verified manually by staff. BX Coins are added only after verification — never automatically.
         </p>
         <div id="deposit-methods" class="coins-grid" style="grid-template-columns:repeat(3,1fr); margin-bottom:var(--space-lg);"></div>
 
@@ -110,7 +115,7 @@
         <div id="deposit-form" style="display:none;">
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:var(--space-md); margin-bottom:var(--space-md);">
             <div>
-              <label style="font-size:.8rem; color:var(--text-muted);">Package / Coins</label>
+              <label style="font-size:.8rem; color:var(--text-muted);">Package / BX Coins</label>
               <select id="dep-package" class="filter-search" style="width:100%;"></select>
             </div>
             <div>
@@ -131,14 +136,14 @@
 
       <!-- WITHDRAW (backend-configured methods only) -->
       <div class="card" id="withdraw-card" style="display:none; margin-bottom: var(--space-xl);">
-        <h3 style="margin-bottom: var(--space-lg);">Withdraw Coins</h3>
+        <h3 style="margin-bottom: var(--space-lg);">Withdraw BX Coins</h3>
         <p style="color:var(--text-muted); font-size:.85rem; margin-bottom:var(--space-lg);" id="withdraw-min-note"></p>
         <div id="withdraw-methods" class="coins-grid" style="grid-template-columns:repeat(3,1fr); margin-bottom:var(--space-lg);"></div>
 
         <div id="withdraw-form" style="display:none;">
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:var(--space-md); margin-bottom:var(--space-md);">
             <div>
-              <label style="font-size:.8rem; color:var(--text-muted);">Amount (coins)</label>
+              <label style="font-size:.8rem; color:var(--text-muted);">Amount (BX Coins)</label>
               <input type="number" id="wd-coins" min="1" style="width:100%;">
             </div>
             <div>
@@ -158,7 +163,7 @@
           </div>
           <button class="btn btn-primary" id="wd-submit">SUBMIT WITHDRAWAL</button>
           <p style="color:var(--text-muted); font-size:.78rem; margin-top:var(--space-sm);">
-            Coins are <strong>reserved</strong> immediately. They are only deducted permanently after the owner records the real payout.
+            BX Coins are <strong>reserved</strong> immediately. They are only deducted permanently after the owner records the real payout.
           </p>
         </div>
       </div>
@@ -246,7 +251,7 @@
           const nav = document.getElementById('nav-balance-value');
           if (nav) nav.textContent = data.wallet ? data.wallet.balance : 0;
           document.getElementById('wallet-reserved').textContent =
-            data.reserved_coins > 0 ? `≈ reserved: ${data.reserved_coins} coins (pending withdrawals)` : '';
+            data.reserved_coins > 0 ? `≈ reserved: ${data.reserved_coins} BX Coins (pending withdrawals)` : '';
         } catch (e) {
           document.getElementById('wallet-balance').textContent = '—';
         }
@@ -258,7 +263,7 @@
           packages = data.packages || [];
           const sel = document.getElementById('dep-package');
           sel.innerHTML = packages.map(p =>
-            `<option value="${esc(p.id)}">${esc(p.coins)} Coins — Rs. ${esc(p.price_pkr)}</option>`).join('');
+            `<option value="${esc(p.id)}">${esc(p.coins)} BX Coins — Rs. ${esc(p.price_pkr)}</option>`).join('');
         } catch (e) { packages = []; }
       }
 
@@ -338,7 +343,7 @@
           const data = await DataService.Deposits.mine();
           const rows = data.deposits || [];
           if (!rows.length) { box.innerHTML = OwnerEmpty('NO DEPOSITS YET', 'Submitted deposits will appear here.'); return; }
-          box.innerHTML = '<div class="table-wrap"><table class="data-table"><thead><tr><th>Package</th><th>Coins</th><th>Rs.</th><th>Method</th><th>Reference</th><th>Status</th><th>Date</th></tr></thead><tbody>' +
+          box.innerHTML = '<div class="table-wrap"><table class="data-table"><thead><tr><th>Package</th><th>BX Coins</th><th>Rs.</th><th>Method</th><th>Reference</th><th>Status</th><th>Date</th></tr></thead><tbody>' +
             rows.map(d => `<tr><td>${esc(d.package_name)}</td><td>${esc(d.coins)}</td><td>${esc(d.amount)}</td><td style="text-transform:capitalize;">${esc(d.payment_method)}</td><td>${esc(d.reference)}</td><td>${statusBadge(d.status)}</td><td>${esc(String(d.created_at || '').slice(0, 16))}</td></tr>`).join('') +
             '</tbody></table></div>';
         } catch (e) { box.innerHTML = OwnerEmpty('LOAD FAILED', e.message || 'Could not load deposits.'); }
@@ -350,10 +355,10 @@
           const data = await DataService.Withdrawals.mine();
           minimumWithdrawal = data.minimum || 100;
           document.getElementById('withdraw-min-note').textContent =
-            `Minimum withdrawal: ${minimumWithdrawal} coins. Coins are reserved until staff completes or rejects the request.`;
+            `Minimum withdrawal: ${minimumWithdrawal} BX Coins. BX Coins are reserved until staff completes or rejects the request.`;
           const rows = data.withdrawals || [];
           if (!rows.length) { box.innerHTML = OwnerEmpty('NO WITHDRAWALS YET', 'Withdrawal requests will appear here.'); return; }
-          box.innerHTML = '<div class="table-wrap"><table class="data-table"><thead><tr><th>Coins</th><th>Method</th><th>Status</th><th>Notes</th><th>Requested</th><th>Paid At</th></tr></thead><tbody>' +
+          box.innerHTML = '<div class="table-wrap"><table class="data-table"><thead><tr><th>BX Coins</th><th>Method</th><th>Status</th><th>Notes</th><th>Requested</th><th>Paid At</th></tr></thead><tbody>' +
             rows.map(w => `<tr><td>${esc(w.coins)}</td><td style="text-transform:capitalize;">${esc(w.payment_method)}</td><td>${statusBadge(w.status)}</td><td>${esc(w.review_notes || '—')}</td><td>${esc(String(w.created_at || '').slice(0, 16))}</td><td>${esc(String(w.paid_at || '').slice(0, 16) || '—')}</td></tr>`).join('') +
             '</tbody></table></div>';
         } catch (e) { box.innerHTML = OwnerEmpty('LOAD FAILED', e.message || 'Could not load withdrawals.'); }
@@ -369,7 +374,7 @@
             return;
           }
           box.innerHTML = '<div class="table-wrap"><table class="data-table"><thead><tr><th>Type</th><th>Amount</th><th>Status</th><th>Reference</th><th>Date</th></tr></thead><tbody>' +
-            rows.map(t => `<tr><td style="text-transform:capitalize;">${esc(String(t.type).replace('_', ' '))}</td><td style="color:${t.amount < 0 ? '#ff4d6d' : '#3ddc84'};font-weight:700;">${t.amount > 0 ? '+' : ''}${esc(t.amount)}</td><td>${statusBadge(t.status)}</td><td>${esc(t.reference || '—')}</td><td>${esc(String(t.created_at || '').slice(0, 16))}</td></tr>`).join('') +
+            rows.map(t => `<tr><td style="text-transform:capitalize;">${esc(String(t.type).replace('_', ' '))}</td><td style="color:${t.amount < 0 ? '#ff4d6d' : '#3ddc84'};font-weight:700;"><img class="coin-ic" src="assets/branding/bx-coin-small.png" alt="BX Coin">${t.amount > 0 ? '+' : ''}${esc(t.amount)} BX Coins</td><td>${statusBadge(t.status)}</td><td>${esc(t.reference || '—')}</td><td>${esc(String(t.created_at || '').slice(0, 16))}</td></tr>`).join('') +
             '</tbody></table></div>';
         } catch (e) { /* keep empty state */ }
       }
@@ -396,7 +401,7 @@
         const holder = document.getElementById('wd-holder').value.trim();
         const ref = document.getElementById('wd-ref').value.trim();
         if (!chosenWithdrawMethod) { showToast('Select a withdrawal method first', 'error'); return; }
-        if (!coins || coins < minimumWithdrawal) { showToast(`Minimum withdrawal is ${minimumWithdrawal} coins`, 'error'); return; }
+        if (!coins || coins < minimumWithdrawal) { showToast(`Minimum withdrawal is ${minimumWithdrawal} BX Coins`, 'error'); return; }
         if (!account || !holder) { showToast('JazzCash account number and holder name are required', 'error'); return; }
         try {
           await DataService.Withdrawals.create({
@@ -404,7 +409,7 @@
             account_number: account, account_holder_name: holder,
             reference_info: ref, destination_info: account
           });
-          showToast('Withdrawal requested — coins reserved, status PENDING', 'success');
+          showToast('Withdrawal requested — BX Coins reserved, status PENDING', 'success');
           document.getElementById('wd-coins').value = '';
           document.getElementById('wd-ref').value = '';
           loadWallet();

@@ -358,7 +358,7 @@ function initializeDatabase() {
     CREATE TABLE IF NOT EXISTS transactions (
       id TEXT PRIMARY KEY,
       user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-      type TEXT NOT NULL CHECK(type IN ('deposit', 'tournament_entry', 'reward', 'withdrawal', 'bonus', 'adjustment', 'daily_reward', 'refund')),
+      type TEXT NOT NULL CHECK(type IN ('deposit', 'tournament_entry', 'reward', 'withdrawal', 'bonus', 'adjustment', 'daily_reward', 'refund', 'purchase')),
       amount INTEGER NOT NULL,
       reference TEXT,
       status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending', 'completed', 'processing', 'rejected', 'cancelled')),
@@ -798,6 +798,51 @@ function initializeDatabase() {
       updated_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
+    -- ---------- EVENTS: PURCHASABLE ITEMS (real purchases only) ----------
+    CREATE TABLE IF NOT EXISTS event_items (
+      id TEXT PRIMARY KEY,
+      event_id TEXT NOT NULL REFERENCES events(id) ON DELETE CASCADE,
+      name TEXT NOT NULL,
+      description TEXT,
+      kind TEXT NOT NULL DEFAULT 'item' CHECK(kind IN ('item','avatar','frame','badge','template','decoration')),
+      asset_url TEXT,
+      price_coins INTEGER NOT NULL DEFAULT 0 CHECK(price_coins >= 0),
+      stock INTEGER,
+      active INTEGER NOT NULL DEFAULT 1,
+      created_by TEXT REFERENCES users(id),
+      created_at TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE TABLE IF NOT EXISTS event_purchases (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      item_id TEXT NOT NULL REFERENCES event_items(id) ON DELETE CASCADE,
+      event_id TEXT REFERENCES events(id) ON DELETE SET NULL,
+      price_coins INTEGER NOT NULL,
+      transaction_id TEXT,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE(user_id, item_id)
+    );
+
+    -- ---------- OAUTH ACCOUNT LINKING (real provider identities) ----------
+    CREATE TABLE IF NOT EXISTS oauth_accounts (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      provider TEXT NOT NULL CHECK(provider IN ('google')),
+      provider_account_id TEXT NOT NULL,
+      email TEXT,
+      linked_at TEXT NOT NULL DEFAULT (datetime('now')),
+      UNIQUE(provider, provider_account_id)
+    );
+
+    -- ---------- PERSISTENT SESSIONS (survive restarts; server-authoritative) ----------
+    CREATE TABLE IF NOT EXISTS user_sessions (
+      sid TEXT PRIMARY KEY,
+      data TEXT NOT NULL,
+      expires INTEGER NOT NULL
+    );
+    CREATE INDEX IF NOT EXISTS idx_user_sessions_expires ON user_sessions(expires);
+
     -- ---------- OFFICIAL TEAM (real assignments only) ----------
     -- Position catalog: definitions only (like roles). No fake members seeded.
     CREATE TABLE IF NOT EXISTS official_team_positions (
@@ -863,7 +908,10 @@ function initializeDatabase() {
     ['tournaments', 'template_id', 'TEXT'],
     ['tournaments', 'featured', 'INTEGER NOT NULL DEFAULT 0'],
     ['tournament_results', 'reward_transaction_id', 'TEXT'],
-    ['withdrawals', 'payout_reference', 'TEXT']
+    ['withdrawals', 'payout_reference', 'TEXT'],
+    ['news', 'event_id', 'TEXT'],
+    ['news', 'banner', 'TEXT'],
+    ['news', 'expires_at', 'TEXT']
   ];
   for (const [table, column, type] of migrations) {
     const cols = db.prepare(`PRAGMA table_info(${table})`).all();
@@ -920,14 +968,14 @@ function initializeDatabase() {
     }
   }
 
-  // 1) transactions: older databases lack 'refund' and 'daily_reward' types
+  // 1) transactions: older databases lack 'refund'/'daily_reward'/'purchase' types
   const rebuilt = [];
   if (rebuildTable('transactions',
-    sql => sql.includes("'refund'") ? null : sql.replace(
-      "'adjustment')",
-      "'adjustment', 'refund', 'daily_reward')"
+    sql => sql.includes("'purchase'") ? null : sql.replace(
+      "'daily_reward')",
+      "'daily_reward', 'purchase')"
     ),
-    "type IN ('deposit','tournament_entry','reward','withdrawal','bonus','adjustment','refund','daily_reward')"
+    "type IN ('deposit','tournament_entry','reward','withdrawal','bonus','adjustment','refund','daily_reward','purchase')"
   )) rebuilt.push('transactions');
 
   // 2) tables whose FK still points at the dropped "teams_old"
@@ -1068,7 +1116,25 @@ const PERMISSIONS = [
   ['notifications.broadcast', 'Send broadcast notifications', 'settings'],
   ['promos.manage', 'Manage promo codes', 'wallet'],
   ['economy.manage', 'Manage packages, daily rewards, VIP', 'wallet'],
-  ['affiliate.manage', 'Manage affiliate program', 'wallet']
+  ['affiliate.manage', 'Manage affiliate program', 'wallet'],
+
+  // ---- Moderator dashboard permissions (explicit, scoped; no Owner/Developer powers) ----
+  ['moderator.dashboard', 'Access the Moderator dashboard', 'moderator'],
+  ['moderator.tournaments.view', 'View tournaments (Moderator)', 'moderator'],
+  ['moderator.tournaments.create', 'Create tournaments (Moderator)', 'moderator'],
+  ['moderator.tournaments.update', 'Edit/publish/close tournaments (Moderator)', 'moderator'],
+  ['moderator.tournaments.delete', 'Cancel/delete tournaments (Moderator)', 'moderator'],
+  ['moderator.events.view', 'View events (Moderator)', 'moderator'],
+  ['moderator.events.create', 'Create events (Moderator)', 'moderator'],
+  ['moderator.events.update', 'Edit events (Moderator)', 'moderator'],
+  ['moderator.events.delete', 'Delete events (Moderator)', 'moderator'],
+  ['moderator.news.view', 'View news (Moderator)', 'moderator'],
+  ['moderator.news.create', 'Create news (Moderator)', 'moderator'],
+  ['moderator.news.update', 'Edit news (Moderator)', 'moderator'],
+  ['moderator.news.delete', 'Delete news (Moderator)', 'moderator'],
+  ['moderator.coins.view', 'Search users/wallets (Moderator)', 'moderator'],
+  ['moderator.coins.adjust', 'Add/remove BX Coins with reason (Moderator)', 'moderator'],
+  ['moderator.money.view', 'View the Money live board', 'moderator']
 ];
 
 // Role → permission keys. PRIMARY_OWNER gets '*' (all, including future).
@@ -1079,7 +1145,7 @@ const ROLE_PERMISSION_MAP = {
     'dashboard.view', 'developer.view', 'developer.manage', 'apikeys.manage',
     'systemhealth.view', 'errors.view', 'errors.manage', 'backup.manage',
     'importexport.use', 'settings.view', 'audit.view', 'tournaments.view',
-    'users.view', 'roles.view'
+    'users.view', 'roles.view', 'moderator.money.view'
   ],
   ADMIN: [
     'dashboard.view', 'users.view', 'users.edit', 'users.suspend', 'users.bulk',
@@ -1102,7 +1168,17 @@ const ROLE_PERMISSION_MAP = {
   MODERATOR: [
     'dashboard.view', 'users.view', 'tournaments.view', 'results.view',
     'reports.view', 'reports.manage', 'support.view', 'feedback.view',
-    'feedback.manage', 'teams.view', 'polls.manage'
+    'feedback.manage', 'teams.view', 'polls.manage',
+    // Moderator dashboard (scoped — no Owner/Developer administration)
+    'moderator.dashboard',
+    'moderator.tournaments.view', 'moderator.tournaments.create',
+    'moderator.tournaments.update', 'moderator.tournaments.delete',
+    'moderator.events.view', 'moderator.events.create',
+    'moderator.events.update', 'moderator.events.delete',
+    'moderator.news.view', 'moderator.news.create',
+    'moderator.news.update', 'moderator.news.delete',
+    'moderator.coins.view', 'moderator.coins.adjust',
+    'moderator.money.view'
   ],
   SUPPORT: [
     'dashboard.view', 'users.view', 'deposits.view', 'withdrawals.view',
@@ -1242,8 +1318,8 @@ function seedPlatformConfig() {
       ['tournament_starting', 'Tournament Starting: {{tournament_name}}', 'Hi {{username}},\n\n{{tournament_name}} starts soon.'],
       ['tournament_completed', 'Tournament Completed: {{tournament_name}}', 'Hi {{username}},\n\n{{tournament_name}} has completed.'],
       ['result_published', 'Results Published: {{tournament_name}}', 'Hi {{username}},\n\nResults for {{tournament_name}} are live.'],
-      ['deposit_update', 'Deposit {{status}}', 'Hi {{username}},\n\nYour deposit of {{amount}} coins is {{status}}.'],
-      ['withdrawal_update', 'Withdrawal {{status}}', 'Hi {{username}},\n\nYour withdrawal of {{amount}} coins is {{status}}.'],
+      ['deposit_update', 'Deposit {{status}}', 'Hi {{username}},\n\nYour deposit of {{amount}} BX Coins is {{status}}.'],
+      ['withdrawal_update', 'Withdrawal {{status}}', 'Hi {{username}},\n\nYour withdrawal of {{amount}} BX Coins is {{status}}.'],
       ['security_alert', 'Security Alert', 'Hi {{username}},\n\nA security-relevant change occurred on your account.'],
       ['support_update', 'Support Ticket {{status}}', 'Hi {{username}},\n\nYour ticket {{ticket_code}} is {{status}}.']
     ];

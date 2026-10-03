@@ -34,7 +34,7 @@ const smokeUsers = db.prepare(
 const smokeIds = new Set(smokeUsers.map(u => u.id));
 
 const smokeTournaments = db.prepare(
-  "SELECT id FROM tournaments WHERE name LIKE 'Smoke%'"
+  "SELECT id FROM tournaments WHERE (name LIKE 'Smoke%' OR name LIKE 'MOD Test%' OR name LIKE 'MOD Bad%')"
 ).all().map(t => t.id);
 const smokeTourIds = new Set(smokeTournaments);
 
@@ -132,10 +132,10 @@ const delBy = (label, sql, ...params) => {
   catch (e) { console.log(`${label} ERR:`, e.message); }
 };
 
-delBy('tournaments', "DELETE FROM tournaments WHERE name LIKE 'Smoke%'");delBy('news', "DELETE FROM news WHERE title LIKE 'Smoke%' OR title LIKE 'Draft News%' OR title LIKE 'Sync Probe%'");
+delBy('tournaments', "DELETE FROM tournaments WHERE (name LIKE 'Smoke%' OR name LIKE 'MOD Test%' OR name LIKE 'MOD Bad%')");delBy('news', "DELETE FROM news WHERE title LIKE 'Smoke%' OR title LIKE 'Draft News%' OR title LIKE 'Sync Probe%'");
 delBy('banners', "DELETE FROM banners WHERE title LIKE 'Smoke%' OR title LIKE 'Sync Probe%' OR title LIKE 'Dbg%'");
 delBy('popups', "DELETE FROM popups WHERE title LIKE 'Smoke%' OR title LIKE 'Sync Probe%'");
-delBy('sponsors', "DELETE FROM sponsors WHERE name LIKE 'Smoke%' OR name LIKE 'Sync Probe%'");
+delBy('sponsors', "DELETE FROM sponsors WHERE (name LIKE 'Smoke%' OR name LIKE 'MOD Test%' OR name LIKE 'MOD Bad%') OR name LIKE 'Sync Probe%'");
 delBy('highlights', "DELETE FROM highlights WHERE title LIKE 'Smoke%' OR title LIKE 'Sync Probe%'");
 delBy('events', "DELETE FROM events WHERE title LIKE 'Smoke%' OR title LIKE 'Sync Probe%' OR title LIKE 'No Times%'");
 delBy('updates', "DELETE FROM updates WHERE title LIKE 'Smoke%' OR title LIKE 'Sync Probe%'");

@@ -134,7 +134,7 @@ module.exports = function competitiveRoutes(app, ctx) {
 
           if (r.user_id) {
             notify(r.user_id, 'Results Published',
-              `${t.name}: Position ${r.position}${r.reward > 0 ? ` — +${r.reward} coins` : ''}`, 'results');
+              `${t.name}: Position ${r.position}${r.reward > 0 ? ` — +${r.reward} BX Coins` : ''}`, 'results');
           }
         }
 

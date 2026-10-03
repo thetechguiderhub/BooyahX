@@ -1,4 +1,4 @@
-/* ============================================
+﻿/* ============================================
    BOOYAHX — OWNER AUTHENTICATION & AUTHORIZATION
    Real Backend Integration
    Roles and permissions come from the server.
@@ -131,6 +131,8 @@ const OwnerUI = (() => {
     { section: 'Overview' },
     { page: 'dashboard.html', label: 'Dashboard', icon: '◧', permission: 'dashboard.view', console: 'both' },
     { page: 'analytics.html', label: 'Analytics', icon: '◫', permission: 'analytics.view', console: 'owner' },
+    { page: 'money.html', label: 'Money Board', icon: '$', permission: 'moderator.money.view', console: 'both' },
+    { page: '../moderator/moderator.html', label: 'Moderator Dashboard', icon: '🛡', permission: 'moderator.dashboard', console: 'both' },
 
     { section: 'Management' },
     { page: 'tournaments.html', label: 'Tournaments', icon: '◈', permission: 'tournaments.view' },

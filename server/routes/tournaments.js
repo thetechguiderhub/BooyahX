@@ -136,7 +136,7 @@ module.exports = function tournamentRoutes(app, ctx) {
 
   // ---------- CREATE ----------
 
-  app.post('/api/tournaments', requirePermission('tournaments.create'), (req, res) => {
+  app.post('/api/tournaments', requirePermission('tournaments.create', 'moderator.tournaments.create'), (req, res) => {
     try {
       const b = req.body || {};
       const missing = requireFields(b, ['name', 'game', 'mode', 'format', 'player_limit', 'start_time']);
@@ -210,7 +210,7 @@ module.exports = function tournamentRoutes(app, ctx) {
 
   // ---------- UPDATE ----------
 
-  app.put('/api/tournaments/:id', requirePermission('tournaments.edit'), (req, res) => {
+  app.put('/api/tournaments/:id', requirePermission('tournaments.edit', 'moderator.tournaments.update'), (req, res) => {
     try {
       const t = db.prepare('SELECT * FROM tournaments WHERE id = ?').get(req.params.id);
       if (!t) return notFound(res, 'Tournament');
@@ -258,6 +258,22 @@ module.exports = function tournamentRoutes(app, ctx) {
       }
       if (!fields.length && !Array.isArray(b.tag_ids)) return badRequest(res, 'Nothing to update');
 
+      // Server-side window validation on the EFFECTIVE values (updated + existing).
+      // End time must be after start time; registration windows must make sense.
+      const effStart = b.start_time !== undefined ? b.start_time : t.start_time;
+      const effEnd = b.ends_at !== undefined ? b.ends_at : t.ends_at;
+      const effRegClose = b.registration_closes_at !== undefined ? b.registration_closes_at : t.registration_closes_at;
+      const effRegOpen = b.registration_opens_at !== undefined ? b.registration_opens_at : t.registration_opens_at;
+      const sT = effStart ? Date.parse(effStart) : null;
+      const eT = effEnd ? Date.parse(effEnd) : null;
+      const rcT = effRegClose ? Date.parse(effRegClose) : null;
+      const roT = effRegOpen ? Date.parse(effRegOpen) : null;
+      if (sT !== null && !Number.isFinite(sT)) return badRequest(res, 'Invalid start time');
+      if (eT !== null && !Number.isFinite(eT)) return badRequest(res, 'Invalid end time');
+      if (sT !== null && eT !== null && eT < sT) return badRequest(res, 'End time cannot be before start time');
+      if (rcT !== null && Number.isFinite(rcT) && Number.isFinite(sT) && rcT > sT) return badRequest(res, 'Registration must close before start time');
+      if (roT !== null && Number.isFinite(roT) && Number.isFinite(sT) && roT > sT) return badRequest(res, 'Registration cannot open after start time');
+
       db.tx(() => {
         if (fields.length) {
           fields.push("updated_at = datetime('now')");
@@ -281,7 +297,7 @@ module.exports = function tournamentRoutes(app, ctx) {
 
   // ---------- DELETE / CANCEL ----------
 
-  app.delete('/api/tournaments/:id', requirePermission('tournaments.cancel'), (req, res) => {
+  app.delete('/api/tournaments/:id', requirePermission('tournaments.cancel', 'moderator.tournaments.delete'), (req, res) => {
     try {
       const t = db.prepare('SELECT * FROM tournaments WHERE id = ?').get(req.params.id);
       if (!t) return notFound(res, 'Tournament');
@@ -351,7 +367,7 @@ module.exports = function tournamentRoutes(app, ctx) {
         if (t.entry_cost > 0) {
           const wallet = db.prepare('SELECT balance FROM wallets WHERE user_id = ?').get(userId);
           if (!wallet || wallet.balance < t.entry_cost) {
-            const err = new Error('Insufficient coins');
+            const err = new Error('Insufficient BX Coins');
             err.status = 400; err.code = 'INSUFFICIENT_COINS';
             throw err;
           }
@@ -360,7 +376,7 @@ module.exports = function tournamentRoutes(app, ctx) {
             "UPDATE wallets SET balance = balance - ?, updated_at = datetime('now') WHERE user_id = ? AND balance >= ?"
           ).run(t.entry_cost, userId, t.entry_cost);
           if (walletUpdate.changes !== 1) {
-            const err = new Error('Insufficient coins');
+            const err = new Error('Insufficient BX Coins');
             err.status = 400; err.code = 'INSUFFICIENT_COINS';
             throw err;
           }
@@ -435,6 +451,21 @@ module.exports = function tournamentRoutes(app, ctx) {
     res.json({ tournaments: rows.map(t => serializeTournament(t)) });
   });
 
+  // Staff/Moderator: registered players for a tournament (real registrations).
+  // Registered AFTER /me so the static 'me' segment is never captured by :id.
+  app.get('/api/tournaments/:id/registrations', requirePermission('tournaments.view', 'moderator.tournaments.view'), (req, res) => {
+    try {
+      const t = db.prepare('SELECT * FROM tournaments WHERE id = ?').get(req.params.id);
+      if (!t) return notFound(res, 'Tournament');
+      const rows = db.prepare(`
+        SELECT r.id, r.user_id, r.status, r.joined_at, u.username, u.name as user_name, u.email
+        FROM tournament_registrations r JOIN users u ON u.id = r.user_id
+        WHERE r.tournament_id = ? ORDER BY r.joined_at DESC
+      `).all(t.id);
+      res.json({ tournament: { id: t.id, name: t.name }, registrations: rows, count: rows.length });
+    } catch (err) { serverError(res, err); }
+  });
+
   // ============================================
   // BRACKETS
   // ============================================
@@ -449,7 +480,7 @@ module.exports = function tournamentRoutes(app, ctx) {
     res.json({ matches });
   });
 
-  app.put('/api/tournaments/:id/bracket', requirePermission('tournaments.brackets'), (req, res) => {
+  app.put('/api/tournaments/:id/bracket', requirePermission('tournaments.brackets', 'moderator.tournaments.update'), (req, res) => {
     try {
       const t = db.prepare('SELECT id FROM tournaments WHERE id = ?').get(req.params.id);
       if (!t) return notFound(res, 'Tournament');

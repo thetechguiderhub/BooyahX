@@ -48,7 +48,7 @@ async function loadPlayer() {
         ${statTile('Tournaments', s.total_tournaments)}
         ${statTile('Wins', s.wins)}
         ${statTile('Win Rate', s.win_rate + '%')}
-        ${statTile('Coins Earned', s.coins_earned)}
+        ${statTile('BX Coins Earned', s.coins_earned)}
         ${statTile('2nd Place', s.second_place)}
         ${statTile('3rd Place', s.third_place)}
         ${statTile('Best Streak', s.best_streak)}

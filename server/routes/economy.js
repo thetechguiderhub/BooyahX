@@ -53,7 +53,7 @@ module.exports = function economyRoutes(app, ctx) {
     const coins = asInt(b.coins, 0);
     const price = Number(b.price_pkr);
     if (!name || coins <= 0 || !Number.isFinite(price) || price <= 0) {
-      return badRequest(res, 'Name, positive coins and positive price are required');
+      return badRequest(res, 'Name, positive BX Coins amount and positive price are required');
     }
     const id = db.makeId('PKG');
     db.prepare('INSERT INTO coin_packages (id, name, coins, price_pkr, sort_order) VALUES (?, ?, ?, ?, ?)')
@@ -69,7 +69,7 @@ module.exports = function economyRoutes(app, ctx) {
     const fields = [];
     const params = [];
     if (b.name !== undefined) { fields.push('name = ?'); params.push(cleanText(b.name, 60)); }
-    if (b.coins !== undefined) { const c = asInt(b.coins, 0); if (c <= 0) return badRequest(res, 'Coins must be positive'); fields.push('coins = ?'); params.push(c); }
+    if (b.coins !== undefined) { const c = asInt(b.coins, 0); if (c <= 0) return badRequest(res, 'BX Coins must be positive'); fields.push('coins = ?'); params.push(c); }
     if (b.price_pkr !== undefined) { const pr = Number(b.price_pkr); if (!Number.isFinite(pr) || pr <= 0) return badRequest(res, 'Price must be positive'); fields.push('price_pkr = ?'); params.push(pr); }
     if (b.status !== undefined) { if (!['active', 'inactive'].includes(b.status)) return badRequest(res, 'Invalid status'); fields.push('status = ?'); params.push(b.status); }
     if (b.sort_order !== undefined) { fields.push('sort_order = ?'); params.push(asInt(b.sort_order, 0)); }
@@ -149,12 +149,12 @@ module.exports = function economyRoutes(app, ctx) {
              b.payment_method, reference, cleanText(b.proof || '', 300));
 
       db.audit(req.user.id, 'deposit_submitted', 'deposit', id, { package: pkg.name, coins: pkg.coins, method: b.payment_method });
-      notify(req.user.id, 'Deposit Submitted', `Your deposit of ${pkg.coins} coins is pending review`, 'wallet');
+      notify(req.user.id, 'Deposit Submitted', `Your deposit of ${pkg.coins} BX Coins is pending review`, 'wallet');
 
       res.status(201).json({
         message: 'Deposit submitted for review',
         deposit: { id, status: 'pending', coins: pkg.coins, package_name: pkg.name },
-        note: 'Deposits are verified manually. Coins are added only after approval.'
+        note: 'Deposits are verified manually. BX Coins are added only after approval.'
       });
     } catch (err) { serverError(res, err); }
   });
@@ -214,11 +214,11 @@ module.exports = function economyRoutes(app, ctx) {
         return w;
       });
 
-      notify(d.user_id, 'Deposit Verified', `${d.coins} coins added to your wallet`, 'wallet');
+      notify(d.user_id, 'Deposit Verified', `${d.coins} BX Coins added to your wallet`, 'wallet');
       sendEmail(d.user_id, '', 'deposit_update', { username: 'player', amount: d.coins, status: 'VERIFIED' });
       db.audit(req.user.id, 'deposit_approved', 'deposit', d.id, { coins: d.coins, user: d.user_id });
 
-      res.json({ message: 'Deposit verified and coins credited', balance: result.balance });
+      res.json({ message: 'Deposit verified and BX Coins credited', balance: result.balance });
     } catch (err) {
       if (err.status) return res.status(err.status).json({ error: err.message, code: 'CONFLICT' });
       serverError(res, err);
@@ -238,7 +238,7 @@ module.exports = function economyRoutes(app, ctx) {
     notify(d.user_id, 'Deposit Rejected', `Your deposit was rejected.${notes ? ' Reason: ' + notes : ''}`, 'wallet');
     sendEmail(d.user_id, '', 'deposit_update', { username: 'player', amount: d.coins, status: 'REJECTED' });
     db.audit(req.user.id, 'deposit_rejected', 'deposit', d.id, { user: d.user_id, notes });
-    res.json({ message: 'Deposit rejected. No coins were added.' });
+    res.json({ message: 'Deposit rejected. No BX Coins were added.' });
   });
 
   // ---------- WITHDRAWALS ----------
@@ -281,7 +281,7 @@ module.exports = function economyRoutes(app, ctx) {
 
       const coins = asInt(b.coins, 0);
       const min = MIN_WITHDRAWAL();
-      if (coins < min) return badRequest(res, `Minimum withdrawal is ${min} coins`);
+      if (coins < min) return badRequest(res, `Minimum withdrawal is ${min} BX Coins`);
 
       // Optional verification requirement (owner-configured)
       if (getSetting('withdrawal_requires_verification', 'false') === 'true') {
@@ -298,7 +298,7 @@ module.exports = function economyRoutes(app, ctx) {
       if (active) return conflict(res, 'You already have an active withdrawal request');
 
       const wallet = db.prepare('SELECT balance FROM wallets WHERE user_id = ?').get(req.user.id);
-      if (!wallet || wallet.balance < coins) return badRequest(res, 'Insufficient coins');
+      if (!wallet || wallet.balance < coins) return badRequest(res, 'Insufficient BX Coins');
 
       const id = db.makeId('WDR');
       const created = db.tx(() => {
@@ -307,7 +307,7 @@ module.exports = function economyRoutes(app, ctx) {
           "UPDATE wallets SET balance = balance - ?, updated_at = datetime('now') WHERE user_id = ? AND balance >= ?"
         ).run(coins, req.user.id, coins);
         if (upd.changes !== 1) {
-          const err = new Error('Insufficient coins');
+          const err = new Error('Insufficient BX Coins');
           err.status = 400; throw err;
         }
         db.prepare('INSERT INTO transactions (id, user_id, type, amount, reference, status, idempotency_key) VALUES (?, ?, ?, ?, ?, ?, ?)')
@@ -319,9 +319,9 @@ module.exports = function economyRoutes(app, ctx) {
         return true;
       });
 
-      notify(req.user.id, 'Withdrawal Requested', `${coins} coins withdrawal submitted for review`, 'wallet');
+      notify(req.user.id, 'Withdrawal Requested', `${coins} BX Coins withdrawal submitted for review`, 'wallet');
       db.audit(req.user.id, 'withdrawal_requested', 'withdrawal', id, { coins, method: b.payment_method });
-      res.status(201).json({ message: 'Withdrawal requested. Coins reserved pending review.', withdrawalId: id });
+      res.status(201).json({ message: 'Withdrawal requested. BX Coins reserved pending review.', withdrawalId: id });
     } catch (err) {
       if (err.status) return res.status(err.status).json({ error: err.message, code: 'BAD_REQUEST' });
       serverError(res, err);
@@ -387,7 +387,7 @@ module.exports = function economyRoutes(app, ctx) {
           .run(`withdrawal:${w.id}`, w.id);
       });
       db.audit(req.user.id, 'withdrawal_paid', 'withdrawal', w.id, { coins: w.coins, user: w.user_id, payout_reference: payoutReference || w.payout_reference });
-      notify(w.user_id, 'Withdrawal Paid', `Your withdrawal of ${w.coins} coins has been paid`, 'wallet');
+      notify(w.user_id, 'Withdrawal Paid', `Your withdrawal of ${w.coins} BX Coins has been paid`, 'wallet');
       sendEmail(w.user_id, '', 'withdrawal_update', { username: 'player', amount: w.coins, status: 'PAID' });
     } else {
       db.audit(req.user.id, `withdrawal_${nextStatus}`, 'withdrawal', w.id, { coins: w.coins });
@@ -416,10 +416,10 @@ module.exports = function economyRoutes(app, ctx) {
         db.prepare('UPDATE withdrawals SET transaction_id = ? WHERE id = ?').run(r.transactionId, w.id);
       });
 
-      notify(w.user_id, 'Withdrawal Rejected', `Your withdrawal was rejected and ${w.coins} coins restored.${notes ? ' Reason: ' + notes : ''}`, 'wallet');
+      notify(w.user_id, 'Withdrawal Rejected', `Your withdrawal was rejected and ${w.coins} BX Coins restored.${notes ? ' Reason: ' + notes : ''}`, 'wallet');
       sendEmail(w.user_id, '', 'withdrawal_update', { username: 'player', amount: w.coins, status: 'REJECTED' });
       db.audit(req.user.id, 'withdrawal_rejected', 'withdrawal', w.id, { coins: w.coins, user: w.user_id, notes });
-      res.json({ message: 'Withdrawal rejected and coins restored' });
+      res.json({ message: 'Withdrawal rejected and BX Coins restored' });
     } catch (err) { serverError(res, err); }
   });
 
@@ -429,7 +429,7 @@ module.exports = function economyRoutes(app, ctx) {
     const b = req.body || {};
     const code = cleanText(b.code, 30).toUpperCase().replace(/[^A-Z0-9_-]/g, '');
     const coins = asInt(b.coins, 0);
-    if (!code || coins <= 0) return badRequest(res, 'Code and positive coins are required');
+    if (!code || coins <= 0) return badRequest(res, 'Code and positive BX Coins are required');
     if (db.prepare('SELECT id FROM promo_codes WHERE code = ?').get(code)) return conflict(res, 'Code already exists');
 
     const id = db.makeId('PRM');
@@ -479,9 +479,9 @@ module.exports = function economyRoutes(app, ctx) {
         return { coins: p.coins, balance: w.balance };
       });
 
-      notify(req.user.id, 'Promo Redeemed', `+${result.coins} coins from promo code`, 'wallet');
+      notify(req.user.id, 'Promo Redeemed', `+${result.coins} BX Coins from promo code`, 'wallet');
       db.audit(req.user.id, 'promo_redeemed', 'promo', code, { coins: result.coins });
-      res.json({ message: `Redeemed! +${result.coins} coins`, balance: result.balance });
+      res.json({ message: `Redeemed! +${result.coins} BX Coins`, balance: result.balance });
     } catch (err) {
       if (err.status) return res.status(err.status).json({ error: err.message, code: err.code });
       serverError(res, err);
@@ -543,8 +543,8 @@ module.exports = function economyRoutes(app, ctx) {
         return { coins, streak, balance: w.balance };
       });
 
-      notify(req.user.id, 'Daily Reward', `+${result.coins} coins (streak day ${result.streak})`, 'wallet');
-      res.json({ message: `Claimed ${result.coins} coins`, ...result });
+      notify(req.user.id, 'Daily Reward', `+${result.coins} BX Coins (streak day ${result.streak})`, 'wallet');
+      res.json({ message: `Claimed ${result.coins} BX Coins`, ...result });
     } catch (err) {
       if (err.status) return res.status(err.status).json({ error: err.message, code: err.code });
       serverError(res, err);
@@ -691,7 +691,7 @@ module.exports = function economyRoutes(app, ctx) {
       db.prepare("UPDATE referral_commissions SET status = 'payable' WHERE referral_id = ? AND status = 'pending'").run(ref.id);
       const comm = db.prepare('SELECT amount FROM referral_commissions WHERE referral_id = ?').get(ref.id);
       notify(ref.referrer_id, 'Referral Qualified',
-        `Your referral earned a commission of ${comm ? comm.amount : 0} coins (pending payout rules)`, 'affiliate');
+        `Your referral earned a commission of ${comm ? comm.amount : 0} BX Coins (pending payout rules)`, 'affiliate');
     }
     return rows.length;
   };

@@ -120,7 +120,7 @@ function applyWalletChange(userId, opts) {
 
     const newBalance = wallet.balance + amount;
     if (newBalance < 0 && !allowNegative) {
-      const err = new Error('Insufficient coins');
+      const err = new Error('Insufficient BX Coins');
       err.code = 'INSUFFICIENT_COINS';
       throw err;
     }

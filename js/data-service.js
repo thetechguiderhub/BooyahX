@@ -122,6 +122,25 @@ const DataService = (() => {
     methods: () => get('/payment-methods')
   };
 
+  const OAuth = {
+    status: () => get('/auth/oauth/status')
+  };
+
+  // Moderator dashboard (scoped moderator.* permissions; server-enforced)
+  const Moderator = {
+    overview: () => get('/moderator/overview'),
+    tournaments: () => get('/moderator/tournaments'),
+    registrations: id => get(`/tournaments/${encodeURIComponent(id)}/registrations`),
+    eventItems: eventId => get(`/moderator/events/${encodeURIComponent(eventId)}/items`),
+    createEventItem: (eventId, data) => post(`/moderator/events/${encodeURIComponent(eventId)}/items`, data),
+    updateEventItem: (id, data) => put(`/moderator/event-items/${encodeURIComponent(id)}`, data),
+    deleteEventItem: id => del(`/moderator/event-items/${encodeURIComponent(id)}`),
+    searchUsers: q => get('/moderator/coins/users', { q }),
+    userHistory: id => get(`/moderator/coins/users/${encodeURIComponent(id)}/history`),
+    adjustCoins: data => post('/moderator/coins/adjust', data),
+    money: () => get('/moderator/money')
+  };
+
   const Console = {
     get: () => get('/console'),
     switchTo: mode => post('/console/switch', { console: mode })
@@ -206,6 +225,8 @@ const DataService = (() => {
   // ---------- CONTENT ----------
   const Content = {
     events: params => get('/events', { ...params, include_drafts: params && params.drafts ? '1' : '' }),
+    eventStore: (eventId) => get('/events/' + encodeURIComponent(eventId) + '/items'),
+    buyEventItem: (eventId, itemId) => post('/events/' + encodeURIComponent(eventId) + '/items/' + encodeURIComponent(itemId) + '/purchase'),
     news: params => get('/news', params),
     updates: params => get('/updates', params),
     banners: () => get('/banners'),
@@ -332,7 +353,7 @@ const DataService = (() => {
     Wallet, Payments, Console, Deposits, Withdrawals, Promos, DailyReward, Vip, Referrals,
     Results, Leaderboard, Players, Achievements, Teams,
     Content, contentCrud, Support, Notifications,
-    Owner, OfficialTeam, Settings, System, Verification
+    Owner, OfficialTeam, Moderator, OAuth, Settings, System, Verification
   };
 })();
 

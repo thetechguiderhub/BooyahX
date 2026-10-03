@@ -18,8 +18,11 @@ module.exports = function contentRoutes(app, ctx) {
   }
 
   // Helper: generic draft CRUD registration to avoid repetition
+  // aliasCreate/aliasUpdate/aliasDelete/aliasView: extra permission keys that
+  // also grant access (e.g. scoped moderator.* permissions reuse this CRUD).
   function contentCrud(opts) {
-    const { table, permView, permManage, publicWhere, orderField = 'created_at', searchCols = [], jsonCols = [] } = opts;
+    const { table, permView, permManage, publicWhere, orderField = 'created_at', searchCols = [], jsonCols = [],
+            aliasView = null, aliasCreate = null, aliasUpdate = null, aliasDelete = null } = opts;
 
     // SQLite constraint violations are client input problems → honest 400, not a 500 crash
     const constraintError = err => {
@@ -36,7 +39,7 @@ module.exports = function contentRoutes(app, ctx) {
     // Public list
     app.get(`/api/${table}`, optionalAuth, (req, res) => {
       try {
-        const canSeeDrafts = req.user && req.perms && (req.perms.has('*') || req.perms.has(permView) || req.perms.has(permManage));
+        const canSeeDrafts = req.user && req.perms && (req.perms.has('*') || req.perms.has(permView) || req.perms.has(permManage) || (aliasView && req.perms.has(aliasView)));
         const includeDrafts = canSeeDrafts && req.query.include_drafts === '1';
 
         let query = `SELECT * FROM ${table} WHERE 1=1`;
@@ -61,7 +64,7 @@ module.exports = function contentRoutes(app, ctx) {
     });
 
     // Create
-    app.post(`/api/${table}`, requirePermission(permManage), (req, res) => {
+    app.post(`/api/${table}`, requirePermission(permManage, aliasCreate), (req, res) => {
       try {
         const b = req.body || {};
         const cols = db.prepare(`PRAGMA table_info(${table})`).all().map(c => c.name);
@@ -108,7 +111,7 @@ module.exports = function contentRoutes(app, ctx) {
     });
 
     // Update
-    app.put(`/api/${table}/:id`, requirePermission(permManage), (req, res) => {
+    app.put(`/api/${table}/:id`, requirePermission(permManage, aliasUpdate), (req, res) => {
       try {
         const existing = db.prepare(`SELECT * FROM ${table} WHERE id = ?`).get(req.params.id);
         if (!existing) return notFound(res, table.slice(0, -1));
@@ -147,7 +150,7 @@ module.exports = function contentRoutes(app, ctx) {
     });
 
     // Delete
-    app.delete(`/api/${table}/:id`, requirePermission(permManage), (req, res) => {
+    app.delete(`/api/${table}/:id`, requirePermission(permManage, aliasDelete), (req, res) => {
       const existing = db.prepare(`SELECT * FROM ${table} WHERE id = ?`).get(req.params.id);
       if (!existing) return notFound(res, table.slice(0, -1));
       db.prepare(`DELETE FROM ${table} WHERE id = ?`).run(existing.id);
@@ -159,13 +162,17 @@ module.exports = function contentRoutes(app, ctx) {
   // ---------- EVENTS ----------
   contentCrud({
     table: 'events', permView: 'events.view', permManage: 'events.manage',
-    publicWhere: "status = 'published'", orderField: 'start_time', searchCols: ['title', 'description']
+    publicWhere: "status = 'published'", orderField: 'start_time', searchCols: ['title', 'description'],
+    aliasView: 'moderator.events.view', aliasCreate: 'moderator.events.create',
+    aliasUpdate: 'moderator.events.update', aliasDelete: 'moderator.events.delete'
   });
 
   // ---------- NEWS ----------
   contentCrud({
     table: 'news', permView: 'news.view', permManage: 'news.manage',
-    publicWhere: "status = 'published'", orderField: 'published_at', searchCols: ['title', 'content', 'category']
+    publicWhere: "status = 'published'", orderField: 'published_at', searchCols: ['title', 'content', 'category'],
+    aliasView: 'moderator.news.view', aliasCreate: 'moderator.news.create',
+    aliasUpdate: 'moderator.news.update', aliasDelete: 'moderator.news.delete'
   });
 
   // ---------- UPDATES ----------

@@ -108,14 +108,16 @@ function hasPerm(req, permission) {
   return req.perms.has('*') || req.perms.has(permission);
 }
 
-/** Require a specific permission key (DB-driven). */
-function requirePermission(permission) {
+/** Require ANY one of the listed permission keys (alias support: e.g.
+ *  tournaments.create OR moderator.tournaments.create). DB-driven; the first
+ *  key is reported on deny. */
+function requirePermission(...permissions) {
   return (req, res, next) => {
     if (!req.user) {
       return res.status(401).json({ error: 'ACCESS DENIED', code: 'AUTH_REQUIRED' });
     }
-    if (!hasPerm(req, permission)) {
-      return res.status(403).json({ error: 'ACCESS DENIED', code: 'PERMISSION_DENIED', permission });
+    if (!permissions.some(p => hasPerm(req, p))) {
+      return res.status(403).json({ error: 'ACCESS DENIED', code: 'PERMISSION_DENIED', permission: permissions[0] });
     }
     next();
   };

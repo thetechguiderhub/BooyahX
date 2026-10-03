@@ -106,8 +106,11 @@
         <h3 class="event-title">${esc(ev.title)}</h3>
         <p class="event-desc">${esc(ev.description)}</p>
         <div class="event-meta">
-          <span class="info-label"><span data-i18n="card.entry">Entry</span>: ${esc(ev.entry || '0')}</span>
+          <span class="info-label"><span data-i18n="card.entry">Entry</span>: <img class="coin-ic" src="assets/branding/bx-coin-small.png" alt="BX Coin">${esc(ev.entry || '0')} BX Coins</span>
           <span class="info-label"><span data-i18n="event.reward">Reward</span>: ${esc(ev.reward || '—')}</span>
+        </div>
+        <div class="event-actions" style="display:flex;justify-content:flex-end;padding-top:var(--space-md);">
+          <button class="btn btn-outline btn-sm" type="button" data-store-event="${esc(ev.id)}" data-i18n="store.open">STORE</button>
         </div>
       </div>
     </div>`;
@@ -172,6 +175,169 @@
       }, 300));
     }
     window.loadEventsPage();
+  }
+
+  /* ============================================================
+     EVENTS PAGE — EVENT STORE (real items, real purchases)
+     Every value below comes from GET /api/events/:id/items and
+     POST /api/events/:id/items/:id/purchase — nothing is faked.
+     ============================================================ */
+  let storeEventId = null;
+  let storeBusy = false;
+
+  function storeEl(id) { return document.getElementById(id); }
+
+  // Server messages are surfaced verbatim (escaped for the toast's innerHTML).
+  function storeNotice(message, type) {
+    if (message === undefined || message === null || message === '') return;
+    if (typeof showToast === 'function') { showToast(esc(message), type || 'info'); return; }
+    const body = storeEl('event-store-body');
+    if (!body) return;
+    const p = document.createElement('p');
+    p.className = 'table-note';
+    p.style.textAlign = 'left';
+    p.style.color = type === 'error' ? 'var(--danger)' : 'var(--success)';
+    p.textContent = String(message);
+    body.insertBefore(p, body.firstChild);
+  }
+
+  function storeItemRow(item) {
+    const price = Number(item.price_coins) || 0;
+    const left = (item.remaining === null || item.remaining === undefined) ? '∞' : item.remaining;
+    let action;
+    if (item.owned === true) {
+      action = `<span class="status-badge status-completed" data-i18n="store.owned">OWNED</span>`;
+    } else if (item.remaining === 0) {
+      action = `<span class="status-badge status-full" data-i18n="store.sold_out">SOLD OUT</span>`;
+    } else {
+      action = `<button class="btn btn-primary btn-sm" type="button" data-buy-item="${esc(item.id)}" data-i18n="store.buy">BUY WITH BX COINS</button>`;
+    }
+    return `<tr>
+      <td style="min-width:160px;">
+        <strong>${esc(item.name)}</strong>
+        ${item.description ? `<div class="table-note" style="text-align:left;margin-top:4px;">${esc(item.description)}</div>` : ''}
+      </td>
+      <td style="white-space:nowrap;"><span data-i18n="store.price">Price</span>: ${price} <span data-i18n="unit.coins">BX Coins</span></td>
+      <td style="white-space:nowrap;">Left: ${esc(left)}</td>
+      <td style="text-align:right;">${action}</td>
+    </tr>`;
+  }
+
+  function storeMineHtml(purchases, signedIn) {
+    if (purchases.length) {
+      return `<div class="table-wrap"><table class="data-table"><tbody>${purchases.map(p => `
+        <tr>
+          <td>${esc(p.item_name)}</td>
+          <td style="white-space:nowrap;">-${esc(p.price_coins)} <span data-i18n="unit.coins">BX Coins</span></td>
+          <td style="white-space:nowrap;color:var(--text-muted);">${esc(fmtDate(p.created_at))}</td>
+        </tr>`).join('')}</tbody></table></div>`;
+    }
+    // Signed out → invite a sign-in; signed in with no purchases yet → honest empty note.
+    return signedIn
+      ? `<p class="table-note" style="text-align:left;margin-top:0;" data-i18n="wallet.no_transactions">NO TRANSACTIONS YET</p>`
+      : `<p class="table-note" style="text-align:left;margin-top:0;" data-i18n="store.signin">Sign in to buy items.</p>`;
+  }
+
+  function renderEventStore(data, signedIn) {
+    const body = storeEl('event-store-body');
+    if (!body) return;
+    const items = Array.isArray(data.items) ? data.items : [];
+    const purchases = Array.isArray(data.my_purchases) ? data.my_purchases : [];
+    let html = '';
+    if (!items.length) {
+      html += `<div class="empty-state" style="padding:var(--space-xl) var(--space-sm);">
+        <p data-i18n="store.empty" style="margin-bottom:0;">No items available yet.</p>
+      </div>`;
+    } else {
+      html += `<div class="table-wrap"><table class="data-table"><tbody>${
+        items.map(storeItemRow).join('')
+      }</tbody></table></div>`;
+    }
+    html += `<div style="margin-top:var(--space-xl);">
+      <h4 data-i18n="store.mine" style="margin-bottom:var(--space-sm);">My Purchases</h4>
+      ${storeMineHtml(purchases, signedIn)}
+    </div>`;
+    body.innerHTML = html;
+    applyI18n();
+  }
+
+  async function loadEventStore() {
+    const body = storeEl('event-store-body');
+    if (!body || !storeEventId) return;
+    // Items are public (optionalAuth); Auth.me() only tells us whether the
+    // "My Purchases" section should invite a sign-in or show an empty note.
+    const results = await Promise.allSettled([
+      DataService.Content.eventStore(storeEventId),
+      DataService.Auth.me()
+    ]);
+    if (results[0].status !== 'fulfilled') {
+      storeNotice(results[0].reason && results[0].reason.message, 'error');
+      return;
+    }
+    const data = results[0].value;
+    const subtitle = storeEl('event-store-event');
+    if (subtitle && data.event && data.event.title) subtitle.textContent = data.event.title;
+    renderEventStore(data, results[1].status === 'fulfilled');
+  }
+
+  async function buyStoreItem(itemId, btn) {
+    if (storeBusy) return;
+    storeBusy = true;
+    if (btn) btn.disabled = true; // no double buys while the request is in flight
+    try {
+      const res = await DataService.Content.buyEventItem(storeEventId, itemId);
+      storeNotice(res && res.message ? res.message : '', 'success');
+    } catch (err) {
+      const msg = err && err.message;
+      // The API answers 401 as "ACCESS DENIED" — offer sign-in, never force it.
+      storeNotice(msg === 'ACCESS DENIED'
+        ? (typeof I18n !== 'undefined' ? I18n.t('store.signin') : 'Sign in to buy items.')
+        : msg, 'error');
+    }
+    // Re-fetch so owned / stock / remaining always reflect the server.
+    try { await loadEventStore(); } catch (_) {}
+    storeBusy = false;
+  }
+
+  function openEventStore(eventId) {
+    const overlay = storeEl('event-store-modal');
+    if (!overlay || !eventId) return;
+    storeEventId = eventId;
+    const subtitle = storeEl('event-store-event');
+    const known = eventRows.find(r => String(r.id) === String(eventId));
+    if (subtitle) subtitle.textContent = known ? known.title : '';
+    const body = storeEl('event-store-body');
+    if (body) body.innerHTML = '';
+    overlay.style.display = 'flex';
+    requestAnimationFrame(() => overlay.classList.add('open'));
+    loadEventStore();
+  }
+
+  function closeEventStore() {
+    const overlay = storeEl('event-store-modal');
+    if (!overlay || overlay.style.display === 'none') return;
+    overlay.classList.remove('open');
+    setTimeout(() => { overlay.style.display = 'none'; }, 250);
+  }
+
+  function initEventStore() {
+    const overlay = storeEl('event-store-modal');
+    if (!overlay) return;
+    const closeBtn = storeEl('event-store-close');
+    if (closeBtn) closeBtn.addEventListener('click', closeEventStore);
+    overlay.addEventListener('click', e => { if (e.target === overlay) closeEventStore(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeEventStore(); });
+    const body = storeEl('event-store-body');
+    if (body) body.addEventListener('click', e => {
+      const buy = e.target.closest && e.target.closest('[data-buy-item]');
+      if (buy) buyStoreItem(buy.getAttribute('data-buy-item'), buy);
+    });
+    // STORE button on every rendered event card (cards are re-rendered freely,
+    // so the listener lives here, not on the card itself).
+    document.addEventListener('click', e => {
+      const open = e.target.closest && e.target.closest('[data-store-event]');
+      if (open) openEventStore(open.getAttribute('data-store-event'));
+    });
   }
 
   /* ============================================================
@@ -470,6 +636,7 @@
     mountHighlights();
     mountPopups();
     initEventsPage();
+    initEventStore();
     initNewsPage();
     if (document.getElementById('updates-timeline')) window.loadUpdatesPage();
   });

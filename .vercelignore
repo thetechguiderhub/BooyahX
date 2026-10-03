@@ -1,0 +1,21 @@
+# Vercel upload exclusions (§20/§21) — production must never ship:
+# the database, backend source, tests, env files, git metadata, docs
+# or dependency manifests (the Vercel site is FRONTEND ONLY; /api/*
+# is rewritten to the Railway backend in vercel.json).
+data/
+server/
+test/
+node_modules/
+.git/
+.vercel/
+.env
+.env.example
+package.json
+package-lock.json
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.log
+start.bat
+*.md

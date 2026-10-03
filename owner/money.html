@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="../assets/branding/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/branding/booyahx-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="../assets/branding/booyahx-icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="../assets/branding/booyahx-icon-512.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/branding/apple-touch-icon.png">
+  <title>BooyahX Owner Console - Money Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/owner.css">
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="container-wide">
+      <a href="../index.html" class="nav-brand">
+        <span class="logo-icon">BX</span>
+        BOOYAHX
+      </a>
+      <div class="nav-actions">
+        <span style="font-size: 0.875rem; color: var(--text-muted);">Owner Console</span>
+        <a href="../index.html" class="btn btn-outline btn-sm">View Site</a>
+        <button class="btn btn-secondary btn-sm" onclick="OwnerAuth.logout(); window.location.href='login.html';">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="owner-layout">
+    <aside class="owner-sidebar">
+      <div class="sidebar-header">
+        <h3>⚙️ Owner <span class="owner-badge">Admin</span></h3>
+      </div>
+      <nav class="sidebar-nav"></nav>
+    </aside>
+
+    <main class="owner-main">
+      <div class="owner-header">
+        <h1>Money Live Board</h1>
+        <div class="owner-user-info">
+          <div class="user-avatar" id="owner-avatar">U</div>
+          <div class="user-details">
+            <h4 id="owner-name">Loading...</h4>
+            <p id="owner-email">...</p>
+          </div>
+          <span class="owner-role-badge" id="owner-role">...</span>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <span style="font-size:.8rem;color:var(--text-muted);">Live database values · auto-refresh every 8 seconds · last updated <span id="money-updated">—</span></span>
+      </div>
+
+      <div id="money-board" class="stats-grid">
+        <div class="stat-card"><div class="stat-icon" style="background:rgba(16,185,129,.15);color:var(--success);">↓</div><div class="stat-value money-val" id="mv-total-deposited">00000</div><div class="stat-label">Total Deposited (BX Coins)</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:rgba(239,68,68,.15);color:var(--danger);">↑</div><div class="stat-value money-val" id="mv-total-withdrawn">00000</div><div class="stat-label">Total Withdrawn (BX Coins)</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:rgba(245,158,11,.15);color:var(--warning);">⏳</div><div class="stat-value money-val" id="mv-pending-deposits">00000</div><div class="stat-label">Pending Deposits</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:rgba(245,158,11,.15);color:var(--warning);">⏳</div><div class="stat-value money-val" id="mv-pending-withdrawals">00000</div><div class="stat-label">Pending Withdrawals</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:var(--accent-glow);color:var(--accent);">🔒</div><div class="stat-value money-val" id="mv-reserved">00000</div><div class="stat-label">Reserved (BX Coins)</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:rgba(239,68,68,.15);color:var(--danger);">✕</div><div class="stat-value money-val" id="mv-rejected-withdrawals">00000</div><div class="stat-label">Rejected Withdrawals (BX Coins)</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:var(--accent-glow);color:var(--accent);">◎</div><div class="stat-value money-val" id="mv-circulation">00000</div><div class="stat-label">BX Coins in Circulation</div></div>
+        <div class="stat-card"><div class="stat-icon" style="background:rgba(16,185,129,.15);color:var(--success);">₨</div><div class="stat-value money-val" id="mv-deposited-pkr">00000</div><div class="stat-label">Verified Deposits (PKR)</div></div>
+      </div>
+
+      <p style="color:var(--text-muted);font-size:.8rem;margin-top:16px;">
+        Every value is a live aggregate from the real database. Nothing is estimated or fabricated.
+        Metrics with no database source are never invented — they simply do not appear.
+      </p>
+    </main>
+  </div>
+
+  <script src="../js/data-service.js"></script>
+  <script src="../js/owner-auth.js"></script>
+  <script>
+    OwnerAuth.requireAuth('moderator.money.view');
+    OwnerUI.initLayout('money.html');
+
+    const money = v => (v === null || v === undefined) ? 'NOT CONFIGURED' : (Number(v) === 0 ? '00000' : Number(v).toLocaleString()); // spec: NOT CONFIGURED / 00000 / real value
+
+    async function loadMoney() {
+      try {
+        const data = await DataService.Moderator.money();
+        document.getElementById('mv-total-deposited').textContent = money(data.total_deposited_coins);
+        document.getElementById('mv-total-withdrawn').textContent = money(data.total_withdrawn_coins);
+        document.getElementById('mv-pending-deposits').textContent = money(data.pending_deposits);
+        document.getElementById('mv-pending-withdrawals').textContent = money(data.pending_withdrawals);
+        document.getElementById('mv-reserved').textContent = money(data.reserved_coins);
+        document.getElementById('mv-rejected-withdrawals').textContent = money(data.rejected_withdrawals_coins);
+        document.getElementById('mv-circulation').textContent = money(data.coins_in_circulation);
+        document.getElementById('mv-deposited-pkr').textContent = money(data.total_deposited_pkr);
+        document.getElementById('money-updated').textContent = new Date(data.updated_at).toLocaleTimeString();
+      } catch (e) {
+        OwnerUI.toast(e.message || 'Could not load money board', 'error');
+      }
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      loadMoney();
+      setInterval(loadMoney, 8000); // safe polling — no fake realtime
+    });
+  </script>
+</body>
+</html>

@@ -8,7 +8,7 @@
 // ============================================
 
 function formatCoins(amount) {
-  return `${amount} Coins`;
+  return `${amount} BX Coins`;
 }
 
 function getStatusClass(status) {
@@ -133,7 +133,7 @@ function renderTournamentCard(tournament) {
       <div class="tournament-info">
         <div class="info-item">
           <span class="info-label" data-i18n="card.entry">Entry</span>
-          <span class="info-value">${tournament.entry_cost} Coins</span>
+          <span class="info-value"><img class="coin-ic" src="assets/branding/bx-coin-small.png" alt="BX Coin">${tournament.entry_cost} BX Coins</span>
         </div>
         <div class="info-item">
           <span class="info-label" data-i18n="card.starts">Starts</span>
@@ -149,7 +149,7 @@ function renderTournamentCard(tournament) {
       </div>
       <div class="rewards-preview">
         <span class="reward-icon">🏆</span>
-        <span>${tournament.reward_1st} / ${tournament.reward_2nd} / ${tournament.reward_3rd} / ${tournament.reward_other} Coins</span>
+        <span><img class="coin-ic" src="assets/branding/bx-coin-small.png" alt="BX Coin">${tournament.reward_1st} / ${tournament.reward_2nd} / ${tournament.reward_3rd} / ${tournament.reward_other} BX Coins</span>
       </div>
       <div class="card-footer">
         <span></span>

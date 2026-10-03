@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Withdrawal Management — BOOYAHX Owner Console</title>
+  <link rel="icon" href="../assets/branding/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/branding/booyahx-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="../assets/branding/booyahx-icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="../assets/branding/booyahx-icon-512.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/branding/apple-touch-icon.png">
+  <title>BooyahX Owner Console — Withdrawal Management</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -424,7 +429,7 @@
   <nav class="navbar" id="navbar">
     <div class="container-wide">
       <a href="../index.html" class="nav-brand">
-        <span class="logo-icon">BX</span>
+        <img class="logo-icon" src="../assets/branding/booyahx-logo.png" alt="BooyahX" width="32" height="32">
         BOOYAHX
       </a>
       <div class="nav-actions">
@@ -544,7 +549,7 @@
       overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;';
       overlay.innerHTML = `<div style="background:#151527;border:1px solid #2a2a45;border-radius:12px;padding:24px;max-width:440px;width:100%;">
         <h3 style="margin:0 0 8px;font-size:1.05rem;color:#f0f0f5;">Record Actual Payout</h3>
-        <p style="margin:0 0 12px;font-size:.9rem;color:#9a9ab5;">Only record this after the real payout of ${esc(w.coins)} coins to ${esc(w.username)} has ACTUALLY been sent. A payout reference (e.g. JazzCash transaction ID) is required.</p>
+        <p style="margin:0 0 12px;font-size:.9rem;color:#9a9ab5;">Only record this after the real payout of ${esc(w.coins)} BX Coins to ${esc(w.username)} has ACTUALLY been sent. A payout reference (e.g. JazzCash transaction ID) is required.</p>
         <input id="payout-ref" placeholder="Payout reference / transaction ID" style="width:100%;background:#1e1e33;border:1px solid #2a2a45;border-radius:8px;color:#f0f0f5;padding:10px;font-family:inherit;font-size:.9rem;box-sizing:border-box;">
         <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px;">
           <button data-act="cancel" style="background:#1e1e33;color:#f0f0f5;border:1px solid #2a2a45;border-radius:8px;padding:9px 16px;font-weight:600;cursor:pointer;">Cancel</button>
@@ -605,9 +610,9 @@
         }).join('');
 
         box.innerHTML =
-          `<p style="color:var(--text-muted);font-size:.85rem;margin-bottom:12px;">${esc(countLine)} · <strong style="color:#f59e0b;">reserved coins: ${esc(reserved)}</strong></p>` +
+          `<p style="color:var(--text-muted);font-size:.85rem;margin-bottom:12px;">${esc(countLine)} · <strong style="color:#f59e0b;">reserved BX Coins: ${esc(reserved)}</strong></p>` +
           '<div class="table-wrap"><table class="data-table"><thead><tr>' +
-          ['ID', 'User', 'Coins', 'Method', 'Destination', 'Status', 'Payout Ref', 'Requested', 'Actions']
+          ['ID', 'User', 'BX Coins', 'Method', 'Destination', 'Status', 'Payout Ref', 'Requested', 'Actions']
             .map(c => `<th>${esc(c)}</th>`).join('') +
           '</tr></thead><tbody>' + body + '</tbody></table></div>';
 
@@ -618,7 +623,7 @@
             if (act === 'approve') {
               OwnerUI.confirm({
                 title: 'Approve Withdrawal',
-                message: 'Approve this withdrawal for processing? Coins stay reserved until the payout is recorded.',
+                message: 'Approve this withdrawal for processing? BX Coins stay reserved until the payout is recorded.',
                 type: 'warning', confirmText: 'Approve',
                 onConfirm: async () => {
                   try { await DataService.Withdrawals.approve(id, { to: 'approved' }); OwnerUI.toast('Withdrawal approved', 'success'); load(); }
@@ -626,9 +631,9 @@
                 }
               });
             } else if (act === 'reject') {
-              reasonModal('Reject Withdrawal', 'Record the reason this withdrawal is rejected. Reserved coins will be restored to the user\'s available balance.', 'Reject',
+              reasonModal('Reject Withdrawal', 'Record the reason this withdrawal is rejected. Reserved BX Coins will be restored to the user\'s available balance.', 'Reject',
                 async reason => {
-                  try { await DataService.Withdrawals.reject(id, reason); OwnerUI.toast('Withdrawal rejected and coins restored', 'success'); load(); }
+                  try { await DataService.Withdrawals.reject(id, reason); OwnerUI.toast('Withdrawal rejected and BX Coins restored', 'success'); load(); }
                   catch (e) { OwnerUI.toast(e.message || 'Failed', 'error'); }
                 });
             } else if (act === 'paid') {

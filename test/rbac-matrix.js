@@ -184,8 +184,23 @@ function expectedPermsForUser(userId) {
 
 function shouldAllow(perms, permission) {
   if (permission === '@auth') return true; // signed in during probes
-  return perms.has('*') || perms.has(permission);
+  if (perms.has('*') || perms.has(permission)) return true;
+  // Server routes accept scoped moderator.* equivalents via
+  // requirePermission(base, alias) — any-of semantics (auth.js).
+  return (PERM_ALIASES[permission] || []).some(a => perms.has(a));
 }
+
+// Mirrors route registrations (tournaments.js / content.js):
+// requirePermission('base', 'moderator.scoped') — a role holding the
+// scoped key passes the SAME route, so expected access must too.
+const PERM_ALIASES = {
+  'tournaments.create': ['moderator.tournaments.create'],
+  'tournaments.edit': ['moderator.tournaments.update'],
+  'tournaments.cancel': ['moderator.tournaments.delete'],
+  'tournaments.brackets': ['moderator.tournaments.update'],
+  'events.manage': ['moderator.events.update'],
+  'news.manage': ['moderator.news.update'],
+};
 
 // ---------- Probe runner ----------
 

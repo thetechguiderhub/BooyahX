@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Events — BOOYAHX</title>
+  <link rel="icon" href="assets/branding/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/branding/booyahx-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/branding/booyahx-icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/branding/booyahx-icon-512.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/branding/apple-touch-icon.png">
+  <title>BooyahX — Events</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -14,7 +19,7 @@
   <nav class="navbar" id="navbar">
     <div class="container-wide">
       <a href="index.html" class="nav-brand">
-        <span class="logo-icon">BX</span>
+        <img class="logo-icon" src="assets/branding/booyahx-logo.png" alt="BooyahX" width="32" height="32">
         BOOYAHX
       </a>
       <ul class="nav-links">
@@ -101,6 +106,21 @@
       </div>
     </div>
   </footer>
+
+  <!-- Event Store modal — opened from the STORE button on event cards;
+       items, prices and purchases are loaded live from the API. -->
+  <div class="modal-overlay" id="event-store-modal" style="display:none;">
+    <div class="modal" style="max-width:640px;" role="dialog" aria-modal="true" aria-labelledby="event-store-title">
+      <div class="modal-header">
+        <div>
+          <h3 id="event-store-title" data-i18n="store.title">Event Store</h3>
+          <p id="event-store-event" class="table-note" style="text-align:left;margin:4px 0 0;"></p>
+        </div>
+        <button class="modal-close" type="button" aria-label="Close" id="event-store-close">&times;</button>
+      </div>
+      <div id="event-store-body"></div>
+    </div>
+  </div>
 
   <script src="js/i18n.js"></script>
   <script src="js/data-service.js"></script>

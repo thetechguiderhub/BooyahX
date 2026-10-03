@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tournament Templates — BOOYAHX Owner Console</title>
+  <link rel="icon" href="../assets/branding/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/branding/booyahx-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="../assets/branding/booyahx-icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="../assets/branding/booyahx-icon-512.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/branding/apple-touch-icon.png">
+  <title>BooyahX Owner Console — Tournament Templates</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -15,7 +20,7 @@
   <nav class="navbar" id="navbar">
     <div class="container-wide">
       <a href="../index.html" class="nav-brand">
-        <span class="logo-icon">BX</span>
+        <img class="logo-icon" src="../assets/branding/booyahx-logo.png" alt="BooyahX" width="32" height="32">
         BOOYAHX
       </a>
       <div class="nav-actions">
@@ -105,7 +110,7 @@
           '<td><strong>' + esc(t.name) + '</strong></td>' +
           '<td>' + fmt(t.mode) + '</td>' +
           '<td>' + fmt(t.format) + '</td>' +
-          '<td>' + fmt(t.entry_cost) + ' Coins</td>' +
+          '<td>' + fmt(t.entry_cost) + ' BX Coins</td>' +
           '<td>' + fmt(t.player_limit) + '</td>' +
           '<td>' + fmt(t.team_size) + '</td>' +
           '<td>' + fmtDate(t.created_at) + '</td>' +

@@ -67,7 +67,7 @@ const I18n = (() => {
 
       // Wallet
       'wallet.balance': 'Balance',
-      'wallet.coins': 'Coins',
+      'wallet.coins': 'BX Coins',
       'wallet.transactions': 'Transactions',
       'wallet.deposit': 'Deposit',
       'wallet.withdraw': 'Withdraw',
@@ -84,7 +84,7 @@ const I18n = (() => {
       'lb.wins': 'Wins',
       'lb.matches': 'Matches',
       'lb.tournaments': 'Tournaments',
-      'lb.coins_earned': 'Coins Earned',
+      'lb.coins_earned': 'BX Coins Earned',
       'lb.win_rate': 'Win Rate',
       'lb.score': 'Score',
       'lb.global': 'Global',
@@ -123,7 +123,7 @@ const I18n = (() => {
       'error.network': 'Unable to connect to the server',
       'error.required': 'Please fill in all required fields',
       'error.invalid_credentials': 'Invalid credentials',
-      'error.insufficient': 'Insufficient coins',
+      'error.insufficient': 'Insufficient BX Coins',
       'error.maintenance': 'BOOYAHX IS CURRENTLY UNDER MAINTENANCE',
 
       // Empty states
@@ -175,6 +175,18 @@ const I18n = (() => {
       'tab.active': 'Active',
       'tab.upcoming': 'Upcoming',
       'tab.completed': 'Completed',
+
+      // Event store (items + purchases)
+      'unit.coins': 'BX Coins',
+      'store.open': 'STORE',
+      'store.title': 'Event Store',
+      'store.price': 'Price',
+      'store.buy': 'BUY WITH BX COINS',
+      'store.owned': 'OWNED',
+      'store.sold_out': 'SOLD OUT',
+      'store.empty': 'No items available yet.',
+      'store.mine': 'My Purchases',
+      'store.signin': 'Sign in to buy items.',
 
       // Community / official social links
       'community.title': 'COMMUNITY',
@@ -240,7 +252,7 @@ const I18n = (() => {
 
       // Wallet
       'wallet.balance': 'بیلنس',
-      'wallet.coins': 'سکے',
+      'wallet.coins': 'BX کوینز',
       'wallet.transactions': 'لین دین',
       'wallet.deposit': 'ڈپازٹ',
       'wallet.withdraw': 'نکالیں',
@@ -257,7 +269,7 @@ const I18n = (() => {
       'lb.wins': 'جیت',
       'lb.matches': 'میچز',
       'lb.tournaments': 'ٹورنامنٹس',
-      'lb.coins_earned': 'کمائے گئے سکے',
+      'lb.coins_earned': 'کمائے گئے BX کوینز',
       'lb.win_rate': 'جیت کی شرح',
       'lb.score': 'اسکور',
       'lb.global': 'عالمی',
@@ -296,7 +308,7 @@ const I18n = (() => {
       'error.network': 'سرور سے رابطہ نہیں ہو سکا',
       'error.required': 'تمام ضروری خانے بھریں',
       'error.invalid_credentials': 'غلط اسناد',
-      'error.insufficient': 'ناکافی سکے',
+      'error.insufficient': 'ناکافی BX کوینز',
       'error.maintenance': 'BOOYAHX فی الحال مرمت کے تحت ہے',
 
       // Empty states
@@ -348,6 +360,18 @@ const I18n = (() => {
       'tab.active': 'فعال',
       'tab.upcoming': 'آنے والا',
       'tab.completed': 'مکمل',
+
+      // Event store (items + purchases)
+      'unit.coins': 'BX کوینز',
+      'store.open': 'اسٹور',
+      'store.title': 'ایونٹ اسٹور',
+      'store.price': 'قیمت',
+      'store.buy': 'BX کوینز خریدیں',
+      'store.owned': 'خرید لیا',
+      'store.sold_out': 'ختم',
+      'store.empty': 'ابھی کوئی آئٹم دستیاب نہیں۔',
+      'store.mine': 'میری خریداری',
+      'store.signin': 'خریداری کے لیے سائن ان کریں۔',
 
       // Community / official social links
       'community.title': 'کمیونٹی',

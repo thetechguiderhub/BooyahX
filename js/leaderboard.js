@@ -72,7 +72,7 @@ async function loadLeaderboard() {
               <th data-i18n="lb.wins">Wins</th>
               <th data-i18n="lb.tournaments">Tournaments</th>
               <th data-i18n="lb.win_rate">Win Rate</th>
-              <th data-i18n="lb.coins_earned">Coins Earned</th>
+              <th data-i18n="lb.coins_earned">BX Coins Earned</th>
             </tr>
           </thead>
           <tbody>

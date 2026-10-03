@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="../assets/branding/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/branding/booyahx-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="../assets/branding/booyahx-icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="../assets/branding/booyahx-icon-512.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="../assets/branding/apple-touch-icon.png">
+  <title>BooyahX - Moderator Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/owner.css">
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="container-wide">
+      <a href="../index.html" class="nav-brand">
+        <span class="logo-icon">BX</span>
+        BOOYAHX
+      </a>
+      <div class="nav-actions">
+        <span style="font-size: 0.875rem; color: var(--text-muted);">Moderator Console</span>
+        <a href="../index.html" class="btn btn-outline btn-sm">View Site</a>
+        <button class="btn btn-secondary btn-sm" onclick="OwnerAuth.logout(); window.location.href='../owner/login.html';">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="owner-layout">
+    <aside class="owner-sidebar">
+      <div class="sidebar-header">
+        <h3>🛡️ Moderator <span class="owner-badge">Mod</span></h3>
+      </div>
+      <nav class="sidebar-nav" id="mod-nav">
+        <a href="#" data-section="tournament" class="sidebar-link active"><span class="nav-icon">◈</span>Tournament</a>
+        <a href="#" data-section="event" class="sidebar-link"><span class="nav-icon">◔</span>Event</a>
+        <a href="#" data-section="news" class="sidebar-link"><span class="nav-icon">◆</span>News</a>
+        <a href="#" data-section="coins" class="sidebar-link"><span class="nav-icon">¢</span>BX Coins</a>
+        <a href="#" data-section="money" class="sidebar-link"><span class="nav-icon">$</span>Money Board</a>
+      </nav>
+    </aside>
+
+    <main class="owner-main">
+      <div class="owner-header">
+        <h1 id="section-title">Tournament</h1>
+        <div class="owner-user-info">
+          <div class="user-avatar" id="owner-avatar">U</div>
+          <div class="user-details">
+            <h4 id="owner-name">Loading...</h4>
+            <p id="owner-email">...</p>
+          </div>
+          <span class="owner-role-badge" id="owner-role">...</span>
+        </div>
+      </div>
+
+      <!-- ===== 1. TOURNAMENT ===== -->
+      <div class="section-panel" id="panel-tournament">
+        <div class="filter-bar">
+          <button class="btn btn-primary btn-sm" id="btn-new-tournament">+ Create Tournament</button>
+        </div>
+        <div id="tournament-form" style="display:none;" class="card">
+          <h3 id="tf-title" style="margin-bottom:12px;">Create Tournament</h3>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Name *</label><input class="form-input" id="tf-name"></div>
+            <div class="form-group"><label class="form-label">Game *</label><input class="form-input" id="tf-game" value="Free Fire"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Mode *</label>
+              <select class="form-input" id="tf-mode"><option>Clash Squad</option><option>Battle Royale</option></select></div>
+            <div class="form-group"><label class="form-label">Format</label>
+              <select class="form-input" id="tf-format"><option>Solo</option><option>Duo</option><option>Squad</option><option>Clash Squad 4v4</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Entry price (BX Coins) *</label><input type="number" class="form-input" id="tf-entry" min="0" value="0"></div>
+            <div class="form-group"><label class="form-label">Player limit *</label><input type="number" class="form-input" id="tf-limit" min="2" value="8"></div>
+            <div class="form-group"><label class="form-label">Team size</label><input type="number" class="form-input" id="tf-team" min="1" value="1"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Start date/time *</label><input type="datetime-local" class="form-input" id="tf-start"></div>
+            <div class="form-group"><label class="form-label">End date/time</label><input type="datetime-local" class="form-input" id="tf-end"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" id="tf-desc" rows="2"></textarea></div>
+          <button class="btn btn-primary btn-sm" id="tf-save">Save Tournament</button>
+          <button class="btn btn-secondary btn-sm" id="tf-cancel">Cancel</button>
+        </div>
+        <div id="tournament-content"><div class="empty-state"><div class="empty-icon">⏳</div><h3>LOADING...</h3></div></div>
+      </div>
+
+      <!-- ===== 2. EVENT ===== -->
+      <div class="section-panel" id="panel-event" style="display:none;">
+        <div class="filter-bar">
+          <button class="btn btn-primary btn-sm" id="btn-new-event">+ Create Event</button>
+        </div>
+        <div id="event-form" style="display:none;" class="card">
+          <h3 id="ef-title" style="margin-bottom:12px;">Create Event</h3>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Event name *</label><input class="form-input" id="ef-name"></div>
+            <div class="form-group"><label class="form-label">Status</label>
+              <select class="form-input" id="ef-status"><option value="draft">Draft</option><option value="published">Published</option><option value="archived">Archived</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Start date *</label><input type="datetime-local" class="form-input" id="ef-start"></div>
+            <div class="form-group"><label class="form-label">End / expiration date *</label><input type="datetime-local" class="form-input" id="ef-end"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Price in BX Coins (0 = free)</label><input type="number" class="form-input" id="ef-entry" min="0" value="0"></div>
+            <div class="form-group"><label class="form-label">Banner image URL</label><input class="form-input" id="ef-banner"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" id="ef-desc" rows="2"></textarea></div>
+          <button class="btn btn-primary btn-sm" id="ef-save">Save Event</button>
+          <button class="btn btn-secondary btn-sm" id="ef-cancel">Cancel</button>
+        </div>
+        <div id="event-content"><div class="empty-state"><div class="empty-icon">⏳</div><h3>LOADING...</h3></div></div>
+        <div id="event-items-wrap" style="display:none;">
+          <h3 style="margin:24px 0 12px;">Event Items (<span id="ei-event-name"></span>)</h3>
+          <div class="filter-bar">
+            <button class="btn btn-primary btn-sm" id="btn-new-item">+ Add Item</button>
+          </div>
+          <div id="item-form" style="display:none;" class="card">
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Item name *</label><input class="form-input" id="if-name"></div>
+              <div class="form-group"><label class="form-label">Kind</label>
+                <select class="form-input" id="if-kind"><option value="item">Item</option><option value="avatar">Avatar</option><option value="frame">Frame</option><option value="badge">Badge</option><option value="template">Profile Template</option><option value="decoration">Decoration</option></select></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Price in BX Coins *</label><input type="number" class="form-input" id="if-price" min="0" value="0"></div>
+              <div class="form-group"><label class="form-label">Stock (empty = unlimited)</label><input type="number" class="form-input" id="if-stock" min="0"></div>
+            </div>
+            <div class="form-group"><label class="form-label">Asset URL (avatar/frame/badge image)</label><input class="form-input" id="if-asset"></div>
+            <div class="form-group"><label class="form-label">Description</label><input class="form-input" id="if-desc"></div>
+            <button class="btn btn-primary btn-sm" id="if-save">Save Item</button>
+            <button class="btn btn-secondary btn-sm" id="if-cancel">Cancel</button>
+          </div>
+          <div id="event-items-content"></div>
+        </div>
+      </div>
+
+      <!-- ===== 3. NEWS ===== -->
+      <div class="section-panel" id="panel-news" style="display:none;">
+        <div class="filter-bar">
+          <button class="btn btn-primary btn-sm" id="btn-new-news">+ Create News</button>
+        </div>
+        <div id="news-form" style="display:none;" class="card">
+          <h3 id="nf-title" style="margin-bottom:12px;">Create News</h3>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Title *</label><input class="form-input" id="nf-title-input"></div>
+            <div class="form-group"><label class="form-label">Category</label>
+              <select class="form-input" id="nf-category"><option>general</option><option>event</option><option>tournament</option><option>update</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Related event (optional)</label><select class="form-input" id="nf-event"><option value="">— none —</option></select></div>
+            <div class="form-group"><label class="form-label">Status</label>
+              <select class="form-input" id="nf-status"><option value="draft">Draft</option><option value="published">Published</option></select></div>
+          </div>
+          <div class="form-group"><label class="form-label">Banner image URL</label><input class="form-input" id="nf-banner"></div>
+          <div class="form-group"><label class="form-label">Content *</label><textarea class="form-input" id="nf-content" rows="4"></textarea></div>
+          <button class="btn btn-primary btn-sm" id="nf-save">Save News</button>
+          <button class="btn btn-secondary btn-sm" id="nf-cancel">Cancel</button>
+        </div>
+        <div id="news-content"><div class="empty-state"><div class="empty-icon">⏳</div><h3>LOADING...</h3></div></div>
+      </div>
+
+      <!-- ===== 4. COINS ===== -->
+      <div class="section-panel" id="panel-coins" style="display:none;">
+        <div class="filter-bar">
+          <div class="filter-search">
+            <input type="text" id="coins-search" placeholder="Search user by email, username or ID...">
+          </div>
+          <button class="btn btn-primary btn-sm" id="coins-search-btn">Search</button>
+        </div>
+        <div id="coins-content"><div class="empty-state"><div class="empty-icon">¢</div><h3>SEARCH FOR A USER</h3><p>Find a real user to view their wallet and adjustment history.</p></div></div>
+        <div id="coins-adjust" style="display:none; margin-top:16px;" class="card">
+          <h3 style="margin-bottom:12px;">Adjust BX Coins — <span id="ca-username"></span></h3>
+          <p style="font-size:.8rem;color:var(--text-muted);margin-bottom:12px;">Current balance: <strong id="ca-balance">—</strong> BX Coins</p>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Action</label>
+              <select class="form-input" id="ca-action"><option value="add">ADD BX COINS</option><option value="remove">REMOVE BX COINS</option></select></div>
+            <div class="form-group"><label class="form-label">Amount (BX Coins) *</label><input type="number" class="form-input" id="ca-amount" min="1" value="100"></div>
+          </div>
+          <div class="form-group"><label class="form-label">Reason (required, recorded permanently) *</label><input class="form-input" id="ca-reason" placeholder="e.g. Tournament reward correction"></div>
+          <button class="btn btn-primary btn-sm" id="ca-submit">Apply Adjustment</button>
+        </div>
+      </div>
+
+      <!-- ===== 5. MONEY LIVE BOARD ===== -->
+      <div class="section-panel" id="panel-money" style="display:none;">
+        <div class="filter-bar">
+          <span style="font-size:.8rem;color:var(--text-muted);">Live database values · auto-refresh 8s · last updated <span id="money-updated">—</span></span>
+        </div>
+        <div id="money-board" class="stats-grid">
+          <div class="stat-card"><div class="stat-icon" style="background:rgba(16,185,129,.15);color:var(--success);">↓</div><div class="stat-value money-val" id="mv-total-deposited">00000</div><div class="stat-label">Total Deposited (BX Coins)</div></div>
+          <div class="stat-card"><div class="stat-icon" style="background:rgba(239,68,68,.15);color:var(--danger);">↑</div><div class="stat-value money-val" id="mv-total-withdrawn">00000</div><div class="stat-label">Total Withdrawn (BX Coins)</div></div>
+          <div class="stat-card"><div class="stat-icon" style="background:rgba(245,158,11,.15);color:var(--warning);">⏳</div><div class="stat-value money-val" id="mv-pending-deposits">00000</div><div class="stat-label">Pending Deposits</div></div>
+          <div class="stat-card"><div class="stat-icon" style="background:rgba(245,158,11,.15);color:var(--warning);">⏳</div><div class="stat-value money-val" id="mv-pending-withdrawals">00000</div><div class="stat-label">Pending Withdrawals</div></div>
+          <div class="stat-card"><div class="stat-icon" style="background:var(--accent-glow);color:var(--accent);">🔒</div><div class="stat-value money-val" id="mv-reserved">00000</div><div class="stat-label">Reserved (BX Coins)</div></div>
+          <div class="stat-card"><div class="stat-icon" style="background:var(--accent-glow);color:var(--accent);">◎</div><div class="stat-value money-val" id="mv-circulation">00000</div><div class="stat-label">BX Coins in Circulation</div></div>
+          <div class="stat-card"><div class="stat-icon" style="background:rgba(16,185,129,.15);color:var(--success);">₨</div><div class="stat-value money-val" id="mv-deposited-pkr">00000</div><div class="stat-label">Verified Deposits (PKR)</div></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/data-service.js"></script>
+  <script src="../js/owner-auth.js"></script>
+  <script>
+    OwnerAuth.requireAuth('moderator.dashboard');
+    OwnerUI.initLayout('moderator.html');
+
+    const esc = OwnerUI.escapeHtml;
+    const el = id => document.getElementById(id);
+    const show = (m, t) => OwnerUI.toast(m, t);
+    const loading = () => OwnerUI.emptyState('LOADING...', 'Fetching real data from the server.');
+    const failed = err => OwnerUI.errorState(err && err.message ? err.message : 'REQUEST FAILED');
+    const money = v => (v === null || v === undefined) ? 'NOT CONFIGURED' : (Number(v) === 0 ? '00000' : Number(v).toLocaleString()); // spec: NOT CONFIGURED / 00000 / real value
+
+    // ---------- section switching ----------
+    const TITLES = { tournament: 'Tournament', event: 'Event', news: 'News', coins: 'BX Coins', money: 'Money Live Board' };
+    function switchSection(name) {
+      document.querySelectorAll('.section-panel').forEach(p => p.style.display = 'none');
+      el('panel-' + name).style.display = '';
+      el('section-title').textContent = TITLES[name];
+      document.querySelectorAll('#mod-nav .sidebar-link').forEach(a => a.classList.toggle('active', a.dataset.section === name));
+      if (name === 'tournament') loadTournaments();
+      if (name === 'event') loadEvents();
+      if (name === 'news') loadNews();
+      if (name === 'coins') resetCoinsPanel();
+      if (name === 'money') loadMoney(true);
+    }
+    document.querySelectorAll('#mod-nav .sidebar-link').forEach(a =>
+      a.addEventListener('click', e => { e.preventDefault(); switchSection(a.dataset.section); }));
+
+    const badge = s => {
+      const colors = { upcoming: '#3ddc84', waiting: '#f59e0b', live: '#6c5ce7', completed: '#9a9ab5', cancelled: '#ff4d6d', full: '#f59e0b', draft: '#9a9ab5', published: '#3ddc84', archived: '#9a9ab5', almost_full: '#f59e0b', results_pending: '#6c5ce7', starting: '#6c5ce7' };
+      return `<span style="color:${colors[s] || '#9a9ab5'};font-weight:700;">${esc(String(s).toUpperCase())}</span>`;
+    };
+
+    // ================= TOURNAMENT =================
+    let editingTournament = null;
+    async function loadTournaments() {
+      const box = el('tournament-content');
+      box.innerHTML = loading();
+      try {
+        const data = await DataService.Moderator.tournaments();
+        if (data.empty) {
+          box.innerHTML = OwnerUI.emptyState('NO TOURNAMENTS', 'Create the first real tournament using the button above.');
+          return;
+        }
+        const rows = data.tournaments.map(t =>
+          '<tr>' +
+          `<td><strong>${esc(t.name)}</strong><div style="font-size:.72rem;color:var(--text-muted);">${esc(t.game)} · ${esc(t.mode)}</div></td>` +
+          `<td>${badge(t.status)}</td>` +
+          `<td>${esc(t.registration_count)}/${esc(t.player_limit)}</td>` +
+          `<td>${esc(t.entry_cost)}</td>` +
+          `<td>${esc(String(t.start_time || '').slice(0, 16).replace('T', ' '))}</td>` +
+          '<td class="table-actions">' +
+            `<button class="btn btn-secondary btn-sm" data-act="edit" data-id="${esc(t.id)}">Edit</button> ` +
+            `<button class="btn btn-secondary btn-sm" data-act="regs" data-id="${esc(t.id)}">Players</button> ` +
+            (['upcoming','waiting','almost_full','full'].includes(t.status)
+              ? `<button class="btn btn-secondary btn-sm" data-act="close" data-id="${esc(t.id)}">Close</button> ` : '') +
+            `<button class="btn btn-danger btn-sm" data-act="cancel" data-id="${esc(t.id)}">Cancel</button>` +
+          '</td></tr>').join('');
+        box.innerHTML = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+          ['Tournament', 'Status', 'Players', 'Entry', 'Starts', 'Actions'].map(c => `<th>${esc(c)}</th>`).join('') +
+          `</tr></thead><tbody>${rows}</tbody></table></div>`;
+
+        box.querySelectorAll('[data-act]').forEach(btn => btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          const t = data.tournaments.find(x => x.id === id);
+          if (btn.dataset.act === 'edit') openTournamentForm(t);
+          if (btn.dataset.act === 'regs') viewRegistrations(id);
+          if (btn.dataset.act === 'close') {
+            OwnerUI.confirm({
+              title: 'Close Registration', message: `Close registration for "${t.name}"? No new players can join.`,
+              type: 'warning', confirmText: 'Close',
+              onConfirm: async () => {
+                try {
+                  await fetch('/api/tournaments/' + id, { method: 'PUT', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ registration_closes_at: new Date().toISOString() }) });
+                  show('Registration closed', 'success'); loadTournaments();
+                } catch (e) { show(e.message || 'Failed', 'error'); }
+              }
+            });
+          }
+          if (btn.dataset.act === 'cancel') {
+            OwnerUI.confirm({
+              title: 'Cancel Tournament', message: `Cancel "${t.name}"? Registered players are refunded automatically.`,
+              type: 'danger', confirmText: 'Cancel Tournament',
+              onConfirm: async () => {
+                try { await DataService.Tournaments.remove(id); show('Tournament cancelled (entry fees refunded)', 'success'); loadTournaments(); }
+                catch (e) { show(e.message || 'Failed', 'error'); }
+              }
+            });
+          }
+        }));
+      } catch (err) { box.innerHTML = failed(err); }
+    }
+
+    async function viewRegistrations(id) {
+      const box = el('tournament-content');
+      box.innerHTML = loading();
+      try {
+        const data = await DataService.Moderator.registrations(id);
+        if (!data.registrations.length) {
+          box.innerHTML = OwnerUI.emptyState('NO REGISTERED PLAYERS', 'No one has registered for this tournament yet.') +
+            '<div style="text-align:center;margin-top:12px;"><button class="btn btn-secondary btn-sm" id="back-to-t">← Back</button></div>';
+        } else {
+          box.innerHTML = `<h3 style="margin-bottom:12px;">${esc(data.tournament.name)} — Registered Players (${esc(data.count)})</h3>` +
+            '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+            ['Player', 'Email', 'Status', 'Registered'].map(c => `<th>${esc(c)}</th>`).join('') +
+            '</tr></thead><tbody>' + data.registrations.map(r =>
+              `<tr><td>${esc(r.username)}</td><td>${esc(r.email)}</td><td>${badge(r.status)}</td><td>${esc(String(r.registered_at || '').slice(0, 16))}</td></tr>`).join('') +
+            '</tbody></table></div><div style="margin-top:12px;"><button class="btn btn-secondary btn-sm" id="back-to-t">← Back</button></div>';
+        }
+        const back = el('back-to-t');
+        if (back) back.addEventListener('click', loadTournaments);
+      } catch (err) { box.innerHTML = failed(err); }
+    }
+
+    function openTournamentForm(t) {
+      editingTournament = t || null;
+      el('tf-title').textContent = t ? 'Edit Tournament' : 'Create Tournament';
+      el('tf-name').value = t ? t.name : '';
+      el('tf-game').value = t ? t.game : 'Free Fire';
+      el('tf-mode').value = t ? t.mode : 'Clash Squad';
+      el('tf-format').value = t ? (t.format || 'Squad') : 'Squad';
+      el('tf-entry').value = t ? t.entry_cost : 0;
+      el('tf-limit').value = t ? t.player_limit : 8;
+      el('tf-team').value = t ? t.team_size : 1;
+      el('tf-start').value = t ? String(t.start_time || '').slice(0, 16) : '';
+      el('tf-end').value = t ? String(t.ends_at || '').slice(0, 16) : '';
+      el('tf-desc').value = t ? (t.description || '') : '';
+      el('tournament-form').style.display = '';
+      el('tournament-form').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    el('btn-new-tournament').addEventListener('click', () => openTournamentForm(null));
+    el('tf-cancel').addEventListener('click', () => { el('tournament-form').style.display = 'none'; editingTournament = null; });
+    el('tf-save').addEventListener('click', async () => {
+      const payload = {
+        name: el('tf-name').value.trim(),
+        game: el('tf-game').value.trim() || 'Free Fire',
+        mode: el('tf-mode').value,
+        format: el('tf-format').value,
+        entry_cost: parseInt(el('tf-entry').value, 10) || 0,
+        player_limit: parseInt(el('tf-limit').value, 10) || 0,
+        team_size: parseInt(el('tf-team').value, 10) || 1,
+        start_time: el('tf-start').value ? new Date(el('tf-start').value).toISOString() : '',
+        ends_at: el('tf-end').value ? new Date(el('tf-end').value).toISOString() : null,
+        description: el('tf-desc').value.trim()
+      };
+      if (!payload.name || !payload.start_time) { show('Name and start date are required', 'error'); return; }
+      try {
+        if (editingTournament) {
+          await DataService.Tournaments.update(editingTournament.id, payload);
+          show('Tournament updated', 'success');
+        } else {
+          await DataService.Tournaments.create(payload);
+          show('Tournament created', 'success');
+        }
+        el('tournament-form').style.display = 'none';
+        editingTournament = null;
+        loadTournaments();
+      } catch (e) { show(e.message || 'Save failed', 'error'); }
+    });
+
+    // ================= EVENT =================
+    let editingEvent = null;
+    let currentEventId = null;
+    async function loadEvents() {
+      const box = el('event-content');
+      box.innerHTML = loading();
+      try {
+        const data = await DataService.Content.events({ drafts: true });
+        const rows = data.events || [];
+        el('nf-event').innerHTML = '<option value="">— none —</option>' +
+          rows.map(e => `<option value="${esc(e.id)}">${esc(e.title)}</option>`).join('');
+        if (!rows.length) {
+          box.innerHTML = OwnerUI.emptyState('NO EVENTS', 'Create the first real event using the button above.');
+          return;
+        }
+        box.innerHTML = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+          ['Event', 'Status', 'Price', 'Starts', 'Ends', 'Actions'].map(c => `<th>${esc(c)}</th>`).join('') +
+          '</tr></thead><tbody>' + rows.map(e =>
+            '<tr>' +
+            `<td><strong>${esc(e.title)}</strong></td>` +
+            `<td>${badge(e.status)}</td>` +
+            `<td>${esc(e.entry || 0)}</td>` +
+            `<td>${esc(String(e.start_time || '').slice(0, 16).replace('T', ' '))}</td>` +
+            `<td>${esc(String(e.end_time || '').slice(0, 16).replace('T', ' '))}</td>` +
+            '<td class="table-actions">' +
+              `<button class="btn btn-secondary btn-sm" data-act="edit" data-id="${esc(e.id)}">Edit</button> ` +
+              `<button class="btn btn-secondary btn-sm" data-act="items" data-id="${esc(e.id)}" data-name="${esc(e.title)}">Items</button> ` +
+              (e.status === 'draft'
+                ? `<button class="btn btn-primary btn-sm" data-act="publish" data-id="${esc(e.id)}">Publish</button> `
+                : `<button class="btn btn-secondary btn-sm" data-act="unpublish" data-id="${esc(e.id)}">Unpublish</button> `) +
+              `<button class="btn btn-danger btn-sm" data-act="delete" data-id="${esc(e.id)}">Delete</button>` +
+            '</td></tr>').join('') + '</tbody></table></div>';
+
+        box.querySelectorAll('[data-act]').forEach(btn => btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          const ev = rows.find(x => x.id === id);
+          if (btn.dataset.act === 'edit') openEventForm(ev);
+          if (btn.dataset.act === 'items') { currentEventId = id; el('ei-event-name').textContent = ev.title; el('event-items-wrap').style.display = ''; loadEventItems(id); }
+          if (btn.dataset.act === 'publish' || btn.dataset.act === 'unpublish') {
+            try {
+              await fetch('/api/events/' + id, { method: 'PUT', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: btn.dataset.act === 'publish' ? 'published' : 'draft' }) });
+              show('Event updated', 'success'); loadEvents();
+            } catch (e) { show(e.message || 'Failed', 'error'); }
+          }
+          if (btn.dataset.act === 'delete') {
+            OwnerUI.confirm({
+              title: 'Delete Event', message: `Delete "${ev.title}"? This cannot be undone.`,
+              type: 'danger', confirmText: 'Delete',
+              onConfirm: async () => {
+                try { await fetch('/api/events/' + id, { method: 'DELETE', credentials: 'include' }); show('Event deleted', 'success'); loadEvents(); }
+                catch (e) { show(e.message || 'Failed', 'error'); }
+              }
+            });
+          }
+        }));
+      } catch (err) { box.innerHTML = failed(err); }
+    }
+
+    function openEventForm(e) {
+      editingEvent = e || null;
+      el('ef-title').textContent = e ? 'Edit Event' : 'Create Event';
+      el('ef-name').value = e ? e.title : '';
+      el('ef-status').value = e ? e.status : 'draft';
+      el('ef-start').value = e ? String(e.start_time || '').slice(0, 16) : '';
+      el('ef-end').value = e ? String(e.end_time || '').slice(0, 16) : '';
+      el('ef-entry').value = e ? (e.entry || 0) : 0;
+      el('ef-banner').value = e ? (e.banner || '') : '';
+      el('ef-desc').value = e ? (e.description || '') : '';
+      el('event-form').style.display = '';
+    }
+    el('btn-new-event').addEventListener('click', () => openEventForm(null));
+    el('ef-cancel').addEventListener('click', () => { el('event-form').style.display = 'none'; editingEvent = null; });
+    el('ef-save').addEventListener('click', async () => {
+      const payload = {
+        title: el('ef-name').value.trim(),
+        status: el('ef-status').value,
+        start_time: el('ef-start').value ? new Date(el('ef-start').value).toISOString() : '',
+        end_time: el('ef-end').value ? new Date(el('ef-end').value).toISOString() : '',
+        entry: parseInt(el('ef-entry').value, 10) || 0,
+        banner: el('ef-banner').value.trim(),
+        description: el('ef-desc').value.trim()
+      };
+      if (!payload.title || !payload.start_time || !payload.end_time) { show('Name, start and end dates are required', 'error'); return; }
+      try {
+        if (editingEvent) await fetch('/api/events/' + editingEvent.id, { method: 'PUT', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        else await fetch('/api/events', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        show('Event saved', 'success');
+        el('event-form').style.display = 'none'; editingEvent = null; loadEvents();
+      } catch (e) { show(e.message || 'Save failed', 'error'); }
+    });
+
+    async function loadEventItems(eventId) {
+      const box = el('event-items-content');
+      box.innerHTML = loading();
+      try {
+        const data = await DataService.Moderator.eventItems(eventId);
+        if (data.empty) { box.innerHTML = OwnerUI.emptyState('NO ITEMS', 'Add purchasable items (avatars, frames, badges...) for this event.'); return; }
+        box.innerHTML = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+          ['Item', 'Kind', 'Price', 'Stock', 'Sold', 'Actions'].map(c => `<th>${esc(c)}</th>`).join('') +
+          '</tr></thead><tbody>' + data.items.map(i =>
+            '<tr>' +
+            `<td><strong>${esc(i.name)}</strong>${i.active ? '' : ' <span style="color:#ff4d6d;font-size:.72rem;">(inactive)</span>'}</td>` +
+            `<td>${esc(i.kind)}</td><td>${esc(i.price_coins)} BX Coins</td>` +
+            `<td>${i.stock === null ? '∞' : esc(i.stock)}</td><td>${esc(i.purchased_count)}</td>` +
+            '<td class="table-actions">' +
+              `<button class="btn btn-secondary btn-sm" data-act="deactivate" data-id="${esc(i.id)}">${i.active ? 'Deactivate' : 'Activate'}</button> ` +
+              `<button class="btn btn-danger btn-sm" data-act="delete" data-id="${esc(i.id)}">Delete</button>` +
+            '</td></tr>').join('') + '</tbody></table></div>';
+        box.querySelectorAll('[data-act]').forEach(btn => btn.addEventListener('click', async () => {
+          const item = data.items.find(x => x.id === btn.dataset.id);
+          if (btn.dataset.act === 'deactivate') {
+            try { await DataService.Moderator.updateEventItem(item.id, { active: !item.active }); show('Item updated', 'success'); loadEventItems(eventId); }
+            catch (e) { show(e.message || 'Failed', 'error'); }
+          } else {
+            OwnerUI.confirm({
+              title: 'Delete Item', message: `Delete "${item.name}"? Items with real purchases are deactivated instead.`,
+              type: 'danger', confirmText: 'Delete',
+              onConfirm: async () => {
+                try { await DataService.Moderator.deleteEventItem(item.id); show('Item removed', 'success'); loadEventItems(eventId); }
+                catch (e) { show(e.message || 'Failed', 'error'); }
+              }
+            });
+          }
+        }));
+      } catch (err) { box.innerHTML = failed(err); }
+    }
+
+    el('btn-new-item').addEventListener('click', () => { el('item-form').style.display = ''; });
+    el('if-cancel').addEventListener('click', () => { el('item-form').style.display = 'none'; });
+    el('if-save').addEventListener('click', async () => {
+      const payload = {
+        name: el('if-name').value.trim(),
+        kind: el('if-kind').value,
+        price_coins: parseInt(el('if-price').value, 10) || 0,
+        stock: el('if-stock').value === '' ? null : parseInt(el('if-stock').value, 10),
+        asset_url: el('if-asset').value.trim(),
+        description: el('if-desc').value.trim()
+      };
+      if (!payload.name) { show('Item name is required', 'error'); return; }
+      try {
+        await DataService.Moderator.createEventItem(currentEventId, payload);
+        show('Item created', 'success');
+        el('item-form').style.display = 'none';
+        ['if-name', 'if-asset', 'if-desc'].forEach(i => el(i).value = '');
+        loadEventItems(currentEventId);
+      } catch (e) { show(e.message || 'Save failed', 'error'); }
+    });
+
+    // ================= NEWS =================
+    let editingNews = null;
+    async function loadNews() {
+      const box = el('news-content');
+      box.innerHTML = loading();
+      try {
+        const data = await DataService.Content.news({ include_drafts: '1' });
+        const rows = data.news || [];
+        if (!rows.length) { box.innerHTML = OwnerUI.emptyState('NO NEWS', 'Create the first real news post.'); return; }
+        box.innerHTML = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+          ['Title', 'Category', 'Status', 'Published', 'Actions'].map(c => `<th>${esc(c)}</th>`).join('') +
+          '</tr></thead><tbody>' + rows.map(n =>
+            '<tr>' +
+            `<td><strong>${esc(n.title)}</strong></td><td>${esc(n.category)}</td><td>${badge(n.status)}</td>` +
+            `<td>${esc(String(n.published_at || n.created_at || '').slice(0, 16).replace('T', ' '))}</td>` +
+            '<td class="table-actions">' +
+              `<button class="btn btn-secondary btn-sm" data-act="edit" data-id="${esc(n.id)}">Edit</button> ` +
+              (n.status === 'draft'
+                ? `<button class="btn btn-primary btn-sm" data-act="publish" data-id="${esc(n.id)}">Publish</button> `
+                : `<button class="btn btn-secondary btn-sm" data-act="unpublish" data-id="${esc(n.id)}">Unpublish</button> `) +
+              `<button class="btn btn-danger btn-sm" data-act="delete" data-id="${esc(n.id)}">Delete</button>` +
+            '</td></tr>').join('') + '</tbody></table></div>';
+
+        box.querySelectorAll('[data-act]').forEach(btn => btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          const n = rows.find(x => x.id === id);
+          if (btn.dataset.act === 'edit') openNewsForm(n);
+          if (btn.dataset.act === 'publish' || btn.dataset.act === 'unpublish') {
+            try {
+              await fetch('/api/news/' + id, { method: 'PUT', credentials: 'include', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ status: btn.dataset.act === 'publish' ? 'published' : 'draft' }) });
+              show('News updated', 'success'); loadNews();
+            } catch (e) { show(e.message || 'Failed', 'error'); }
+          }
+          if (btn.dataset.act === 'delete') {
+            OwnerUI.confirm({
+              title: 'Delete News', message: `Delete "${n.title}"?`,
+              type: 'danger', confirmText: 'Delete',
+              onConfirm: async () => {
+                try { await fetch('/api/news/' + id, { method: 'DELETE', credentials: 'include' }); show('News deleted', 'success'); loadNews(); }
+                catch (e) { show(e.message || 'Failed', 'error'); }
+              }
+            });
+          }
+        }));
+      } catch (err) { box.innerHTML = failed(err); }
+    }
+
+    function openNewsForm(n) {
+      editingNews = n || null;
+      el('nf-title').textContent = n ? 'Edit News' : 'Create News';
+      el('nf-title-input').value = n ? n.title : '';
+      el('nf-category').value = n ? n.category : 'general';
+      el('nf-event').value = n && n.event_id ? n.event_id : '';
+      el('nf-status').value = n ? n.status : 'draft';
+      el('nf-banner').value = n ? (n.banner || '') : '';
+      el('nf-content').value = n ? n.content : '';
+      el('news-form').style.display = '';
+    }
+    el('btn-new-news').addEventListener('click', () => openNewsForm(null));
+    el('nf-cancel').addEventListener('click', () => { el('news-form').style.display = 'none'; editingNews = null; });
+    el('nf-save').addEventListener('click', async () => {
+      const payload = {
+        title: el('nf-title-input').value.trim(),
+        category: el('nf-category').value,
+        status: el('nf-status').value,
+        banner: el('nf-banner').value.trim(),
+        content: el('nf-content').value.trim(),
+        event_id: el('nf-event').value || null
+      };
+      if (!payload.title || !payload.content) { show('Title and content are required', 'error'); return; }
+      try {
+        if (editingNews) await fetch('/api/news/' + editingNews.id, { method: 'PUT', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        else await fetch('/api/news', { method: 'POST', credentials: 'include', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        show('News saved', 'success');
+        el('news-form').style.display = 'none'; editingNews = null; loadNews();
+      } catch (e) { show(e.message || 'Save failed', 'error'); }
+    });
+
+    // ================= COINS =================
+    let coinsUserId = null;
+    function resetCoinsPanel() {
+      el('coins-content').innerHTML = '<div class="empty-state"><div class="empty-icon">¢</div><h3>SEARCH FOR A USER</h3><p>Find a real user to view their wallet and adjustment history.</p></div>';
+      el('coins-adjust').style.display = 'none';
+      coinsUserId = null;
+    }
+    async function searchCoins() {
+      const q = el('coins-search').value.trim();
+      if (q.length < 2) { show('Enter at least 2 characters', 'error'); return; }
+      const box = el('coins-content');
+      box.innerHTML = loading();
+      try {
+        const data = await DataService.Moderator.searchUsers(q);
+        if (data.empty) { box.innerHTML = OwnerUI.emptyState('NO USERS FOUND', 'No real account matches that search.'); return; }
+        box.innerHTML = '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+          ['User', 'Email', 'Balance', 'Roles', ''].map(c => `<th>${esc(c)}</th>`).join('') +
+          '</tr></thead><tbody>' + data.users.map(u =>
+            '<tr>' +
+            `<td><strong>${esc(u.username)}</strong><div style="font-size:.72rem;color:var(--text-muted);">${esc(u.id)}</div></td>` +
+            `<td>${esc(u.email)}</td><td><strong>${esc(u.balance)} BX Coins</strong></td>` +
+            `<td style="font-size:.75rem;">${esc((u.roles || '').replace(/,/g, ', '))}</td>` +
+            `<td class="table-actions"><button class="btn btn-primary btn-sm" data-id="${esc(u.id)}" data-name="${esc(u.username)}" data-balance="${esc(u.balance)}">Select</button></td>` +
+            '</tr>').join('') + '</tbody></table></div>';
+        box.querySelectorAll('[data-id]').forEach(btn => btn.addEventListener('click', () => selectCoinsUser(btn.dataset.id, btn.dataset.name, btn.dataset.balance)));
+      } catch (err) { box.innerHTML = failed(err); }
+    }
+    async function selectCoinsUser(id, name, balance) {
+      coinsUserId = id;
+      el('ca-username').textContent = name;
+      el('ca-balance').textContent = balance;
+      el('coins-adjust').style.display = '';
+      el('coins-adjust').scrollIntoView({ behavior: 'smooth' });
+      try {
+        const data = await DataService.Moderator.userHistory(id);
+        const hist = el('coins-content');
+        hist.insertAdjacentHTML('beforeend', `<h3 style="margin:20px 0 12px;">Recent Transactions (last 50)</h3>` +
+          (data.empty ? OwnerUI.emptyState('NO TRANSACTIONS', 'This user has no transaction history yet.') :
+          '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+          ['Type', 'Amount', 'Status', 'Date'].map(c => `<th>${esc(c)}</th>`).join('') +
+          '</tr></thead><tbody>' + data.transactions.map(t =>
+            `<tr><td style="text-transform:capitalize;">${esc(String(t.type).replace('_', ' '))}</td>` +
+            `<td style="color:${t.amount < 0 ? '#ff4d6d' : '#3ddc84'};font-weight:700;">${t.amount > 0 ? '+' : ''}${esc(t.amount)} BX Coins</td>` +
+            `<td>${esc(t.status)}</td><td>${esc(String(t.created_at || '').slice(0, 16))}</td></tr>`).join('') +
+          '</tbody></table></div>'));
+      } catch (_) { /* history optional */ }
+    }
+    el('coins-search-btn').addEventListener('click', searchCoins);
+    el('coins-search').addEventListener('keydown', e => { if (e.key === 'Enter') searchCoins(); });
+    el('ca-submit').addEventListener('click', async () => {
+      const action = el('ca-action').value;
+      const amount = parseInt(el('ca-amount').value, 10);
+      const reason = el('ca-reason').value.trim();
+      if (!coinsUserId) { show('Select a user first', 'error'); return; }
+      if (!amount || amount <= 0) { show('Amount must be a positive number of BX Coins', 'error'); return; }
+      if (reason.length < 5) { show('A real reason (min 5 characters) is required', 'error'); return; }
+      OwnerUI.confirm({
+        title: action === 'add' ? 'Add BX Coins' : 'Remove BX Coins',
+        message: `${action === 'add' ? 'Add' : 'Remove'} ${amount} BX Coins ${action === 'add' ? 'to' : 'from'} ${el('ca-username').textContent}? This is recorded permanently with your moderator ID and the reason.`,
+        type: action === 'add' ? 'success' : 'danger', confirmText: 'Confirm',
+        onConfirm: async () => {
+          try {
+            const r = await DataService.Moderator.adjustCoins({ user_id: coinsUserId, action, amount, reason });
+            show(`${r.message} (${r.previous_balance} → ${r.new_balance} BX Coins)`, 'success');
+            el('ca-balance').textContent = r.new_balance;
+            el('ca-reason').value = '';
+          } catch (e) { show(e.message || 'Adjustment failed', 'error'); }
+        }
+      });
+    });
+
+    // ================= MONEY =================
+    let moneyTimer = null;
+    async function loadMoney(keepTimer) {
+      try {
+        const data = await DataService.Moderator.money();
+        el('mv-total-deposited').textContent = money(data.total_deposited_coins);
+        el('mv-total-withdrawn').textContent = money(data.total_withdrawn_coins);
+        el('mv-pending-deposits').textContent = money(data.pending_deposits);
+        el('mv-pending-withdrawals').textContent = money(data.pending_withdrawals);
+        el('mv-reserved').textContent = money(data.reserved_coins);
+        el('mv-circulation').textContent = money(data.coins_in_circulation);
+        el('mv-deposited-pkr').textContent = money(data.total_deposited_pkr);
+        el('money-updated').textContent = new Date(data.updated_at).toLocaleTimeString();
+      } catch (e) {
+        if (String(e.message).includes('ACCESS DENIED')) show('You do not have permission to view the Money board', 'error');
+      }
+      if (!keepTimer) return;
+      if (moneyTimer) clearInterval(moneyTimer);
+      moneyTimer = setInterval(() => {
+        if (el('panel-money').style.display !== 'none') loadMoney(true);
+      }, 8000);
+    }
+
+    // ---------- boot ----------
+    // initLayout() already fills the header user chip once the session loads.
+    document.addEventListener('DOMContentLoaded', () => switchSection('tournament'));
+  </script>
+</body>
+</html>
