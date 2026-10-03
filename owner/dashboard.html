@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — BOOYAHX Owner Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .owner-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+      padding-top: 64px;
+    }
+
+    .owner-sidebar {
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      padding: var(--space-lg);
+      position: sticky;
+      top: 64px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+    }
+
+    .owner-sidebar .sidebar-header {
+      padding-bottom: var(--space-lg);
+      margin-bottom: var(--space-lg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .owner-sidebar .sidebar-header h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .owner-sidebar .sidebar-header h3 .owner-badge {
+      font-size: 0.625rem;
+      padding: 2px 8px;
+      background: var(--accent);
+      color: white;
+      border-radius: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .owner-sidebar .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .owner-sidebar .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all var(--transition-fast);
+    }
+
+    .owner-sidebar .sidebar-nav a:hover,
+    .owner-sidebar .sidebar-nav a.active {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .owner-sidebar .sidebar-nav a.active {
+      color: var(--accent);
+    }
+
+    .owner-sidebar .sidebar-nav .nav-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .owner-main {
+      padding: var(--space-xl);
+      overflow-y: auto;
+    }
+
+    .owner-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-xl);
+      flex-wrap: wrap;
+      gap: var(--space-md);
+    }
+
+    .owner-header h1 {
+      font-size: 1.75rem;
+    }
+
+    .owner-header .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .owner-user-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md) var(--space-lg);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+
+    .owner-user-info .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: white;
+    }
+
+    .owner-user-info .user-details h4 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .owner-user-info .user-details p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .owner-role-badge {
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .role-primary_owner {
+      background: rgba(124, 58, 237, 0.2);
+      color: var(--accent);
+    }
+
+    .role-owner {
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--info);
+    }
+
+    .role-admin {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .role-moderator {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    .role-support {
+      background: rgba(107, 114, 128, 0.2);
+      color: var(--text-secondary);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: var(--space-lg);
+      margin-bottom: var(--space-2xl);
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      transition: all var(--transition-base);
+    }
+
+    .stat-card:hover {
+      border-color: var(--border-light);
+    }
+
+    .stat-card .stat-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-md);
+      font-size: 1.25rem;
+    }
+
+    .stat-card .stat-value {
+      font-size: 1.75rem;
+      font-weight: 800;
+      margin-bottom: var(--space-xs);
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-xl);
+    }
+
+    .dashboard-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .dashboard-card h3 {
+      font-size: 1.125rem;
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-md);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .activity-list {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-md);
+    }
+
+    .activity-item .activity-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .activity-item .activity-content {
+      flex: 1;
+    }
+
+    .activity-item .activity-content h5 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .activity-item .activity-content p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .activity-item .activity-time {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      white-space: nowrap;
+    }
+
+    .quick-actions {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-md);
+    }
+
+    .quick-action-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md) var(--space-lg);
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all var(--transition-fast);
+      cursor: pointer;
+    }
+
+    .quick-action-btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent);
+    }
+
+    .quick-action-btn .qa-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      background: var(--accent-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: var(--space-3xl) var(--space-lg);
+    }
+
+    .empty-state .empty-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto var(--space-lg);
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    .empty-state h3 {
+      font-size: 1.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .empty-state p {
+      color: var(--text-muted);
+      max-width: 400px;
+      margin: 0 auto var(--space-xl);
+    }
+
+    @media (max-width: 1200px) {
+      .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 1024px) {
+      .owner-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .owner-sidebar {
+        display: none;
+      }
+
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .quick-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="container-wide">
+      <a href="../index.html" class="nav-brand">
+        <span class="logo-icon">BX</span>
+        BOOYAHX
+      </a>
+      <div class="nav-actions">
+        <span style="font-size: 0.875rem; color: var(--text-muted);">Owner Console</span>
+        <a href="../index.html" class="btn btn-outline btn-sm">View Site</a>
+        <button class="btn btn-secondary btn-sm" onclick="OwnerAuth.logout(); window.location.href='login.html';">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="owner-layout">
+    <aside class="owner-sidebar">
+      <div class="sidebar-header">
+        <h3>⚙️ Owner <span class="owner-badge">Admin</span></h3>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html" class="active"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="users.html"><span class="nav-icon">👥</span> Users</a>
+        <a href="staff.html"><span class="nav-icon">🛡️</span> Owners & Staff</a>
+        <a href="tournaments.html"><span class="nav-icon">🎮</span> Tournaments</a>
+        <a href="tournament-create.html"><span class="nav-icon">➕</span> Create Tournament</a>
+        <a href="promo-codes.html"><span class="nav-icon">🎟️</span> Promo Codes</a>
+        <a href="roles.html"><span class="nav-icon">🔐</span> Roles</a>
+        <a href="results.html"><span class="nav-icon">🏆</span> Results</a>
+        <a href="wallet.html"><span class="nav-icon">💰</span> Wallet</a>
+        <a href="deposits.html"><span class="nav-icon">💳</span> Deposits</a>
+        <a href="withdrawals.html"><span class="nav-icon">💸</span> Withdrawals</a>
+        <a href="events.html"><span class="nav-icon">🎉</span> Events</a>
+        <a href="news.html"><span class="nav-icon">📰</span> News</a>
+        <a href="updates.html"><span class="nav-icon">🔄</span> Updates</a>
+        <a href="reports.html"><span class="nav-icon">🚨</span> Reports</a>
+        <a href="developer.html"><span class="nav-icon">💻</span> Developer Console</a>
+        <a href="settings.html"><span class="nav-icon">⚙️</span> Settings</a>
+        <a href="audit.html"><span class="nav-icon">📋</span> Audit Logs</a>
+      </nav>
+    </aside>
+
+    <main class="owner-main">
+      <div class="owner-header">
+        <h1>Dashboard Overview</h1>
+        <div class="owner-user-info">
+          <div class="user-avatar" id="owner-avatar">U</div>
+          <div class="user-details">
+            <h4 id="owner-name">Loading...</h4>
+            <p id="owner-email">...</p>
+          </div>
+          <span class="owner-role-badge" id="owner-role">...</span>
+        </div>
+      </div>
+
+      <!-- Primary Owner console switcher (interface mode only — RBAC role never changes) -->
+      <div id="console-panel" style="display:none; margin-bottom:20px; border:1px solid #2a2a45; border-radius:12px; padding:16px 20px; background:#12121f;">
+        <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+          <div>
+            <div style="font-size:.65rem; letter-spacing:.12em; color:#9a9ab5;">CURRENT CONSOLE</div>
+            <div id="console-panel-label" style="font-weight:800; font-size:1.05rem; color:#f0f0f5;">—</div>
+            <div style="font-size:.72rem; color:#9a9ab5; margin-top:2px;">Interface mode only — your security role stays PRIMARY_OWNER.</div>
+          </div>
+          <div id="console-panel-switch" style="margin-left:auto;"></div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: var(--accent-glow); color: var(--accent);">👥</div>
+          <div class="stat-value">0</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">🟢</div>
+          <div class="stat-value">0</div>
+          <div class="stat-label">Active Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);">🔴</div>
+          <div class="stat-value">0</div>
+          <div class="stat-label">Live Tournaments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(59, 130, 246, 0.15); color: var(--info);">📅</div>
+          <div class="stat-value">0</div>
+          <div class="stat-label">Upcoming Tournaments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">✅</div>
+          <div class="stat-value">0</div>
+          <div class="stat-label">Completed Tournaments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--warning);">⏳</div>
+          <div class="stat-value">0</div>
+          <div class="stat-label">Pending Deposits</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--warning);">⏳</div>
+          <div class="stat-value">0</div>
+          <div class="stat-label">Pending Withdrawals</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">💰</div>
+          <div class="stat-value">0</div>
+          <div class="stat-label">Coins Issued</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: var(--accent-glow); color: var(--accent);">🎉</div>
+          <div class="stat-value">0</div>
+          <div class="stat-label">Active Events</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);">🚨</div>
+          <div class="stat-value">0</div>
+          <div class="stat-label">Open Reports</div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="dashboard-card">
+          <h3>Recent Activity</h3>
+          <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <h3>NO ACTIVITY YET</h3>
+            <p>Platform activity will appear here once users start using the system.</p>
+          </div>
+        </div>
+
+        <div class="dashboard-card">
+          <h3>Quick Actions</h3>
+          <div class="quick-actions">
+            <button class="quick-action-btn" onclick="window.location.href='tournament-create.html'">
+              <span class="qa-icon">🎮</span>
+              <span>Create Tournament</span>
+            </button>
+            <button class="quick-action-btn" onclick="window.location.href='users.html'">
+              <span class="qa-icon">👥</span>
+              <span>Manage Users</span>
+            </button>
+            <button class="quick-action-btn" onclick="window.location.href='promo-codes.html'">
+              <span class="qa-icon">🎟️</span>
+              <span>Promo Codes</span>
+            </button>
+            <button class="quick-action-btn" onclick="window.location.href='roles.html'">
+              <span class="qa-icon">🔐</span>
+              <span>Manage Roles</span>
+            </button>
+            <button class="quick-action-btn" onclick="window.location.href='deposits.html'">
+              <span class="qa-icon">💳</span>
+              <span>Review Deposits</span>
+            </button>
+            <button class="quick-action-btn" onclick="window.location.href='withdrawals.html'">
+              <span class="qa-icon">💸</span>
+              <span>Review Withdrawals</span>
+            </button>
+            <button class="quick-action-btn" onclick="window.location.href='events.html'">
+              <span class="qa-icon">🎉</span>
+              <span>Create Event</span>
+            </button>
+            <button class="quick-action-btn" onclick="window.location.href='reports.html'">
+              <span class="qa-icon">🚨</span>
+              <span>View Reports</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/data-service.js"></script>
+  <script src="../js/owner-auth.js"></script>
+  <script>
+    OwnerAuth.requireAuth('dashboard.view');
+    OwnerUI.initLayout('dashboard.html');
+
+    // Load real stats — values come from the DB, never hardcoded.
+    (async () => {
+      try {
+        const data = await DataService.Owner.stats();
+        const s = (data && data.stats) || {};
+        const map = {
+          'Total Users': s.totalUsers,
+          'Active Users': s.activeUsers,
+          'Live Tournaments': s.liveTournaments,
+          'Upcoming Tournaments': s.upcomingTournaments,
+          'Completed Tournaments': s.completedTournaments,
+          'Pending Deposits': s.pendingDeposits,
+          'Pending Withdrawals': s.pendingWithdrawals,
+          'Coins Issued': s.coinsIssued,
+          'Active Events': s.activeEvents,
+          'Open Reports': s.openReports
+        };
+        document.querySelectorAll('.stats-grid .stat-card').forEach(card => {
+          const label = card.querySelector('.stat-label');
+          const value = card.querySelector('.stat-value');
+          if (!label || !value) return;
+          const key = label.textContent.trim();
+          if (Object.prototype.hasOwnProperty.call(map, key)) {
+            const v = map[key];
+            value.textContent = (v === undefined || v === null) ? '—' : v;
+          }
+        });
+      } catch (err) {
+        document.querySelectorAll('.stats-grid .stat-card .stat-value').forEach(v => { v.textContent = '—'; });
+        OwnerUI.toast(err.message || 'Could not load stats', 'error');
+      }
+    })();
+
+    // Primary Owner console switcher (interface mode only).
+    // The backend enforces PRIMARY_OWNER-only access; the RBAC role never changes.
+    (async () => {
+      const panel = document.getElementById('console-panel');
+      if (!panel) return;
+      try {
+        const data = await DataService.Console.get();
+        if (!data.can_switch) return; // only the Primary Owner gets the switch
+        panel.style.display = '';
+        const label = document.getElementById('console-panel-label');
+        const mount = document.getElementById('console-panel-switch');
+        const labelFor = m => m === 'OWNER' ? 'Owner Console' : 'Developer Console';
+        if (label) label.textContent = labelFor(data.console_mode);
+        if (mount) {
+          mount.innerHTML = '<select id="console-switcher" style="min-width:210px;background:#1e1e33;border:1px solid #2a2a45;color:#f0f0f5;border-radius:8px;padding:10px 12px;font-family:inherit;font-weight:700;cursor:pointer;">' +
+            '<option value="DEVELOPER">Developer Console</option>' +
+            '<option value="OWNER">Owner Console</option>' +
+            '</select>';
+          const sel = document.getElementById('console-switcher');
+          sel.value = data.console_mode;
+          sel.addEventListener('change', async () => {
+            try {
+              const r = await DataService.Console.switchTo(sel.value);
+              await OwnerAuth.refresh();
+              if (label) label.textContent = labelFor(r.console_mode);
+              OwnerUI.renderSidebar('dashboard.html');
+              OwnerUI.toast(r.message + ' — RBAC role unchanged', 'success');
+            } catch (e) {
+              sel.value = (OwnerAuth.getUser() && OwnerAuth.getUser().console_mode) || 'DEVELOPER';
+              OwnerUI.toast(e.message || 'Console switch failed', 'error');
+            }
+          });
+        }
+      } catch (_) { /* console endpoint unavailable — switcher simply stays hidden */ }
+    })();
+  </script>
+</body>
+</html>

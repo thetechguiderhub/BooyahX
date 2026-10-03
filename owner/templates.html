@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tournament Templates — BOOYAHX Owner Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/owner.css">
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="container-wide">
+      <a href="../index.html" class="nav-brand">
+        <span class="logo-icon">BX</span>
+        BOOYAHX
+      </a>
+      <div class="nav-actions">
+        <span style="font-size: 0.875rem; color: var(--text-muted);">Owner Console</span>
+        <a href="../index.html" class="btn btn-outline btn-sm">View Site</a>
+        <button class="btn btn-secondary btn-sm" onclick="OwnerAuth.logout(); window.location.href='login.html';">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="owner-layout">
+    <aside class="owner-sidebar">
+      <div class="sidebar-header">
+        <h3>⚙️ Owner <span class="owner-badge">Admin</span></h3>
+      </div>
+      <nav class="sidebar-nav"></nav>
+    </aside>
+
+    <main class="owner-main">
+      <div class="owner-header">
+        <h1>Tournament Templates</h1>
+        <div class="owner-user-info">
+          <div class="user-avatar" id="owner-avatar">U</div>
+          <div class="user-details">
+            <h4 id="owner-name">Loading...</h4>
+            <p id="owner-email">...</p>
+          </div>
+          <span class="owner-role-badge" id="owner-role">...</span>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-search"><input type="text" id="tpl-name" placeholder="Template name"></div>
+        <select id="tpl-mode" class="filter-search" style="flex:0 0 200px;">
+          <option value="Clash Squad">Clash Squad</option>
+          <option value="Battle Royale">Battle Royale</option>
+        </select>
+        <input type="number" id="tpl-entry" class="filter-search" style="flex:0 0 140px;" placeholder="Entry fee" value="20" min="0">
+        <button class="btn btn-primary btn-sm" id="tpl-create">Create Template</button>
+      </div>
+      <div id="tpl-content"><div class="empty-state"><div class="empty-icon">⏳</div><h3>LOADING...</h3></div></div>
+    </main>
+  </div>
+
+  <script src="../js/data-service.js"></script>
+  <script src="../js/owner-auth.js"></script>
+  <script>
+    OwnerAuth.requireAuth('tournaments.templates');
+    OwnerUI.initLayout('templates.html');
+
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const el = id => document.getElementById(id);
+    const show = (msg, type) => OwnerUI.toast(msg, type);
+    function loading() {
+      return OwnerUI.emptyState('LOADING...', 'Fetching data from the server.');
+    }
+    function failed(err) {
+      const msg = err && err.message === 'BACKEND UNAVAILABLE'
+        ? 'BACKEND UNAVAILABLE' : (err && err.message ? err.message : 'REQUEST FAILED');
+      return OwnerUI.errorState(msg);
+    }
+    function emptyBox(title, sub) { return OwnerUI.emptyState(title, sub); }
+    function table(cols, rowsHtml) {
+      return '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+        cols.map(c => '<th>' + esc(c) + '</th>').join('') +
+        '</tr></thead><tbody>' + rowsHtml + '</tbody></table></div>';
+    }
+    function fmt(v) {
+      if (v === null || v === undefined || v === '') return '—';
+      return esc(v);
+    }
+    function fmtDate(v) { return v ? esc(String(v).slice(0, 16).replace('T', ' ')) : '—'; }
+
+
+    async function loadTemplates() {
+      const box = el('tpl-content');
+      box.innerHTML = loading();
+      try {
+        const data = await DataService.Templates.getAll();
+        const rows = data.templates || [];
+        if (!rows.length) {
+          box.innerHTML = emptyBox('NO TEMPLATES', 'Create a template to speed up tournament creation.');
+          return;
+        }
+        const body = rows.map(t => '<tr>' +
+          '<td><strong>' + esc(t.name) + '</strong></td>' +
+          '<td>' + fmt(t.mode) + '</td>' +
+          '<td>' + fmt(t.format) + '</td>' +
+          '<td>' + fmt(t.entry_cost) + ' Coins</td>' +
+          '<td>' + fmt(t.player_limit) + '</td>' +
+          '<td>' + fmt(t.team_size) + '</td>' +
+          '<td>' + fmtDate(t.created_at) + '</td>' +
+          '<td class="table-actions"><button class="btn btn-danger btn-sm" data-del="' + esc(t.id) + '">Delete</button></td>' +
+          '</tr>').join('');
+        box.innerHTML = table(['Name', 'Mode', 'Format', 'Entry', 'Players', 'Team', 'Created', 'Actions'], body);
+        box.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => OwnerUI.confirm({
+          title: 'Delete Template', message: 'This cannot be undone.', type: 'danger', confirmText: 'Delete',
+          onConfirm: async () => {
+            try { await DataService.Templates.remove(b.dataset.del); show('Template deleted', 'success'); loadTemplates(); }
+            catch (e) { show(e.message || 'Delete failed', 'error'); }
+          }
+        })));
+      } catch (err) { box.innerHTML = failed(err); }
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      loadTemplates();
+      const btn = el('tpl-create');
+      if (btn) btn.addEventListener('click', async () => {
+        const name = (el('tpl-name').value || '').trim();
+        if (!name) { show('Enter a template name', 'error'); return; }
+        try {
+          await DataService.Templates.create({
+            name, mode: el('tpl-mode').value, entry_cost: Number(el('tpl-entry').value) || 0
+          });
+          show('Template created', 'success');
+          el('tpl-name').value = '';
+          loadTemplates();
+        } catch (e) { show(e.message || 'Create failed', 'error'); }
+      });
+    });
+
+  </script>
+</body>
+</html>

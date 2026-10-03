@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Deposit Management — BOOYAHX Owner Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .owner-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+      padding-top: 64px;
+    }
+
+    .owner-sidebar {
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      padding: var(--space-lg);
+      position: sticky;
+      top: 64px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+    }
+
+    .owner-sidebar .sidebar-header {
+      padding-bottom: var(--space-lg);
+      margin-bottom: var(--space-lg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .owner-sidebar .sidebar-header h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .owner-sidebar .sidebar-header h3 .owner-badge {
+      font-size: 0.625rem;
+      padding: 2px 8px;
+      background: var(--accent);
+      color: white;
+      border-radius: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .owner-sidebar .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .owner-sidebar .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all var(--transition-fast);
+    }
+
+    .owner-sidebar .sidebar-nav a:hover,
+    .owner-sidebar .sidebar-nav a.active {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .owner-sidebar .sidebar-nav a.active {
+      color: var(--accent);
+    }
+
+    .owner-sidebar .sidebar-nav .nav-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .owner-main {
+      padding: var(--space-xl);
+      overflow-y: auto;
+    }
+
+    .owner-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-xl);
+      flex-wrap: wrap;
+      gap: var(--space-md);
+    }
+
+    .owner-header h1 {
+      font-size: 1.75rem;
+    }
+
+    .owner-header .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .owner-user-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md) var(--space-lg);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+
+    .owner-user-info .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: white;
+    }
+
+    .owner-user-info .user-details h4 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .owner-user-info .user-details p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .owner-role-badge {
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .role-primary_owner {
+      background: rgba(124, 58, 237, 0.2);
+      color: var(--accent);
+    }
+
+    .role-owner {
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--info);
+    }
+
+    .role-admin {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .role-moderator {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    .role-support {
+      background: rgba(107, 114, 128, 0.2);
+      color: var(--text-secondary);
+    }
+
+    .filter-bar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+      flex-wrap: wrap;
+    }
+
+    .filter-tabs {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 4px;
+    }
+
+    .filter-tab {
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: all var(--transition-fast);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .filter-tab:hover {
+      color: var(--text-primary);
+    }
+
+    .filter-tab.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    .filter-search {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+
+    .filter-search input {
+      width: 100%;
+      padding-left: 40px;
+    }
+
+    .filter-search .search-icon {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      width: 18px;
+      height: 18px;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .data-table th,
+    .data-table td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-table th {
+      background: var(--bg-tertiary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .data-table td {
+      font-size: 0.875rem;
+    }
+
+    .data-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .data-table tr:hover td {
+      background: var(--bg-card-hover);
+    }
+
+    .data-table .table-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .status-badge .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+
+    .status-pending { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
+    .status-starting { background: rgba(139, 92, 246, 0.15); color: var(--status-starting); }
+    .status-completed { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .status-cancelled { background: rgba(107, 114, 128, 0.15); color: var(--text-muted); }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.875rem;
+      transition: all var(--transition-fast);
+      border: 1px solid transparent;
+      white-space: nowrap;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      color: white;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
+    }
+
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--bg-card-hover);
+      border-color: var(--border-light);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-primary);
+      border-color: var(--border-light);
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      background: var(--bg-tertiary);
+      border-color: var(--accent);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 0.8125rem;
+    }
+
+    .btn-icon {
+      padding: 8px;
+      border-radius: var(--radius-md);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: var(--space-3xl) var(--space-lg);
+    }
+
+    .empty-state .empty-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto var(--space-lg);
+      color: var(--text-muted);
+      opacity: 0.5;
+    }
+
+    .empty-state h3 {
+      font-size: 1.25rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .empty-state p {
+      color: var(--text-muted);
+      max-width: 400px;
+      margin: 0 auto var(--space-xl);
+    }
+
+    @media (max-width: 1024px) {
+      .owner-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .owner-sidebar {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .data-table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="container-wide">
+      <a href="../index.html" class="nav-brand">
+        <span class="logo-icon">BX</span>
+        BOOYAHX
+      </a>
+      <div class="nav-actions">
+        <span style="font-size: 0.875rem; color: var(--text-muted);">Owner Console</span>
+        <a href="../index.html" class="btn btn-outline btn-sm">View Site</a>
+        <button class="btn btn-secondary btn-sm" onclick="OwnerAuth.logout(); window.location.href='login.html';">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="owner-layout">
+    <aside class="owner-sidebar">
+      <div class="sidebar-header">
+        <h3>⚙️ Owner <span class="owner-badge">Admin</span></h3>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="users.html"><span class="nav-icon">👥</span> Users</a>
+        <a href="staff.html"><span class="nav-icon">🛡️</span> Owners & Staff</a>
+        <a href="tournaments.html"><span class="nav-icon">🎮</span> Tournaments</a>
+        <a href="tournament-create.html"><span class="nav-icon">➕</span> Create Tournament</a>
+        <a href="promo-codes.html"><span class="nav-icon">🎟️</span> Promo Codes</a>
+        <a href="roles.html"><span class="nav-icon">🔐</span> Roles</a>
+        <a href="results.html"><span class="nav-icon">🏆</span> Results</a>
+        <a href="wallet.html"><span class="nav-icon">💰</span> Wallet</a>
+        <a href="deposits.html" class="active"><span class="nav-icon">💳</span> Deposits</a>
+        <a href="withdrawals.html"><span class="nav-icon">💸</span> Withdrawals</a>
+        <a href="events.html"><span class="nav-icon">🎉</span> Events</a>
+        <a href="news.html"><span class="nav-icon">📰</span> News</a>
+        <a href="updates.html"><span class="nav-icon">🔄</span> Updates</a>
+        <a href="reports.html"><span class="nav-icon">🚨</span> Reports</a>
+        <a href="developer.html"><span class="nav-icon">💻</span> Developer Console</a>
+        <a href="settings.html"><span class="nav-icon">⚙️</span> Settings</a>
+        <a href="audit.html"><span class="nav-icon">📋</span> Audit Logs</a>
+      </nav>
+    </aside>
+
+    <main class="owner-main">
+      <div class="owner-header">
+        <h1>Deposit Management</h1>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-tabs" id="dep-tabs">
+          <button class="filter-tab active" data-status="">All</button>
+          <button class="filter-tab" data-status="pending">Pending</button>
+          <button class="filter-tab" data-status="under_review">Under Review</button>
+          <button class="filter-tab" data-status="verified">Verified</button>
+          <button class="filter-tab" data-status="rejected">Rejected</button>
+        </div>
+        <div class="filter-search">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="dep-search" placeholder="Search user / reference...">
+        </div>
+      </div>
+
+      <div id="deposits-content"><div class="empty-state"><div class="empty-icon">⏳</div><h3>LOADING...</h3></div></div>
+    </main>
+  </div>
+
+  <script src="../js/data-service.js"></script>
+  <script src="../js/owner-auth.js"></script>
+  <script>
+    OwnerAuth.requireAuth('deposits.view');
+    OwnerUI.initLayout('deposits.html');
+
+    const esc = s => OwnerUI.escapeHtml(s);
+    const el = id => document.getElementById(id);
+    let currentStatus = '';
+    let search = '';
+
+    function loading() { return OwnerUI.emptyState('LOADING...', 'Fetching real deposit records from the server.'); }
+    function failed(err) {
+      const msg = err && err.message ? err.message : 'REQUEST FAILED';
+      return OwnerUI.errorState(msg);
+    }
+    function badge(s) {
+      const colors = { pending: '#f59e0b', under_review: '#f59e0b', verified: '#3ddc84', rejected: '#ff4d6d' };
+      return `<span style="color:${colors[s] || '#9a9ab5'};font-weight:700;">${esc(String(s).toUpperCase())}</span>`;
+    }
+
+    function reasonModal(title, message, confirmText, onConfirm) {
+      const overlay = document.createElement('div');
+      overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:10000;display:flex;align-items:center;justify-content:center;padding:20px;';
+      overlay.innerHTML = `<div style="background:#151527;border:1px solid #2a2a45;border-radius:12px;padding:24px;max-width:440px;width:100%;">
+        <h3 style="margin:0 0 8px;font-size:1.05rem;color:#f0f0f5;">${esc(title)}</h3>
+        <p style="margin:0 0 12px;font-size:.9rem;color:#9a9ab5;">${esc(message)}</p>
+        <textarea id="reason-input" rows="3" placeholder="Rejection reason (required)" style="width:100%;background:#1e1e33;border:1px solid #2a2a45;border-radius:8px;color:#f0f0f5;padding:10px;font-family:inherit;font-size:.9rem;box-sizing:border-box;"></textarea>
+        <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:14px;">
+          <button data-act="cancel" style="background:#1e1e33;color:#f0f0f5;border:1px solid #2a2a45;border-radius:8px;padding:9px 16px;font-weight:600;cursor:pointer;">Cancel</button>
+          <button data-act="ok" style="background:#ff4d6d;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-weight:700;cursor:pointer;">${esc(confirmText)}</button>
+        </div></div>`;
+      overlay.addEventListener('click', e => { if (e.target === overlay) overlay.remove(); });
+      overlay.querySelector('[data-act="cancel"]').addEventListener('click', () => overlay.remove());
+      overlay.querySelector('[data-act="ok"]').addEventListener('click', () => {
+        const reason = overlay.querySelector('#reason-input').value.trim();
+        if (!reason) { OwnerUI.toast('A rejection reason is required', 'error'); return; }
+        overlay.remove();
+        onConfirm(reason);
+      });
+      document.body.appendChild(overlay);
+    }
+
+    async function load() {
+      const box = el('deposits-content');
+      box.innerHTML = loading();
+      try {
+        const data = await DataService.Deposits.all(currentStatus ? { status: currentStatus } : {});
+        let rows = data.deposits || [];
+        if (search) {
+          const q = search.toLowerCase();
+          rows = rows.filter(d =>
+            String(d.username || '').toLowerCase().includes(q) ||
+            String(d.reference || '').toLowerCase().includes(q) ||
+            String(d.package_name || '').toLowerCase().includes(q));
+        }
+        const counts = data.counts || {};
+
+        const countLine = Object.entries(counts).map(([k, v]) => `${k}: ${v}`).join(' · ');
+        if (!rows.length) {
+          box.innerHTML = OwnerUI.emptyState('NO DEPOSIT REQUESTS',
+            (countLine ? countLine + '. ' : '') + 'Deposit requests will appear here once users submit them.');
+          return;
+        }
+
+        const body = rows.map(d => {
+          const canReview = ['pending', 'under_review'].includes(d.status);
+          return '<tr>' +
+            `<td>${esc(d.id)}</td>` +
+            `<td><strong>${esc(d.username)}</strong></td>` +
+            `<td>${esc(d.package_name)}</td>` +
+            `<td>${esc(d.coins)}</td>` +
+            `<td>Rs. ${esc(d.amount)}</td>` +
+            `<td style="text-transform:capitalize;">${esc(d.payment_method)}</td>` +
+            `<td>${esc(d.reference)}</td>` +
+            `<td>${esc(d.proof || '—')}</td>` +
+            `<td>${badge(d.status)}</td>` +
+            `<td>${esc(String(d.created_at || '').slice(0, 16))}</td>` +
+            `<td class="table-actions">` +
+              (canReview
+                ? `<button class="btn btn-primary btn-sm" data-act="verify" data-id="${esc(d.id)}">Verify</button> ` +
+                  `<button class="btn btn-danger btn-sm" data-act="reject" data-id="${esc(d.id)}">Reject</button>`
+                : esc(d.review_notes ? 'Notes: ' + d.review_notes : '—')) +
+            '</td></tr>';
+        }).join('');
+
+        box.innerHTML =
+          `<p style="color:var(--text-muted);font-size:.85rem;margin-bottom:12px;">${esc(countLine)}</p>` +
+          '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+          ['ID', 'User', 'Package', 'Coins', 'Amount', 'Method', 'Reference ID', 'Proof', 'Status', 'Submitted', 'Actions']
+            .map(c => `<th>${esc(c)}</th>`).join('') +
+          '</tr></thead><tbody>' + body + '</tbody></table></div>';
+
+        box.querySelectorAll('[data-act]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.id;
+            if (btn.dataset.act === 'verify') {
+              OwnerUI.confirm({
+                title: 'Verify Deposit',
+                message: 'Confirm you have ACTUALLY received this payment. Coins will be credited to the user.',
+                type: 'warning', confirmText: 'Verify',
+                onConfirm: async () => {
+                  try { await DataService.Deposits.approve(id, ''); OwnerUI.toast('Deposit verified and coins credited', 'success'); load(); }
+                  catch (e) { OwnerUI.toast(e.message || 'Failed', 'error'); }
+                }
+              });
+            } else {
+              reasonModal('Reject Deposit', 'Record the reason this deposit is rejected. The reason is stored with the record and shown to the user.', 'Reject',
+                async reason => {
+                  try { await DataService.Deposits.reject(id, reason); OwnerUI.toast('Deposit rejected', 'success'); load(); }
+                  catch (e) { OwnerUI.toast(e.message || 'Failed', 'error'); }
+                });
+            }
+          });
+        });
+      } catch (err) { box.innerHTML = failed(err); }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      load();
+      el('dep-tabs').querySelectorAll('.filter-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          el('dep-tabs').querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          currentStatus = tab.dataset.status;
+          load();
+        });
+      });
+      el('dep-search').addEventListener('input', e => { search = e.target.value.trim(); load(); });
+    });
+  </script>
+</body>
+</html>

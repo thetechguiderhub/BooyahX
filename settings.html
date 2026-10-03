@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings — BOOYAHX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="container-wide">
+      <a href="index.html" class="nav-brand">
+        <span class="logo-icon">BX</span>
+        BOOYAHX
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+        <li><a href="tournaments.html" data-i18n="nav.tournaments">Tournaments</a></li>
+        <li><a href="leaderboard.html" data-i18n="nav.leaderboard">Leaderboard</a></li>
+        <li><a href="events.html" data-i18n="nav.events">Events</a></li>
+        <li><a href="news.html" data-i18n="nav.news">News</a></li>
+        <li><a href="about.html" data-i18n="nav.about">About</a></li>
+        <li><a href="rules.html" data-i18n="nav.rules">Rules</a></li>
+        <li><a href="support.html" data-i18n="nav.support">Support</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button id="lang-toggle" class="btn btn-outline btn-sm" type="button">اردو</button>
+        <div class="nav-balance">
+          <span class="coin-icon">C</span>
+          <span>0</span>
+        </div>
+        <a href="profile.html" class="nav-user">
+          <span class="nav-avatar">U</span>
+        </a>
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mobile-menu" id="mobile-menu">
+    <ul class="nav-links">
+      <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+      <li><a href="tournaments.html" data-i18n="nav.tournaments">Tournaments</a></li>
+      <li><a href="leaderboard.html" data-i18n="nav.leaderboard">Leaderboard</a></li>
+      <li><a href="events.html" data-i18n="nav.events">Events</a></li>
+      <li><a href="news.html" data-i18n="nav.news">News</a></li>
+      <li><a href="updates.html" data-i18n="nav.updates">Updates</a></li>
+      <li><a href="about.html" data-i18n="nav.about">About</a></li>
+      <li><a href="rules.html" data-i18n="nav.rules">Rules</a></li>
+      <li><a href="support.html" data-i18n="nav.support">Support</a></li>
+    </ul>
+    <div class="mobile-menu-section">
+      <h6>Account</h6>
+      <ul class="nav-links">
+        <li><a href="profile.html" data-i18n="nav.profile">Profile</a></li>
+        <li><a href="wallet.html" data-i18n="nav.wallet">Wallet</a></li>
+        <li><a href="my-tournaments.html" data-i18n="nav.my_tournaments">My Tournaments</a></li>
+        <li><a href="notifications.html" data-i18n="nav.notifications">Notifications</a></li>
+        <li><a href="settings.html" data-i18n="nav.settings">Settings</a></li>
+        <li><a href="index.html">Logout</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <a href="profile.html"><span class="nav-icon">👤</span> Profile</a>
+        <a href="wallet.html"><span class="nav-icon">💰</span> Wallet</a>
+        <a href="my-tournaments.html"><span class="nav-icon">🎮</span> My Tournaments</a>
+        <a href="notifications.html"><span class="nav-icon">🔔</span> Notifications</a>
+        <a href="settings.html" class="active"><span class="nav-icon">⚙️</span> Settings</a>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="owner-header">
+        <h1>SETTINGS</h1>
+      </div>
+
+      <div class="settings-section">
+        <h3>Account</h3>
+        <div class="form-group">
+          <label class="form-label" data-i18n="auth.full_name">Full Name</label>
+          <input type="text" class="form-input" placeholder="Enter your full name">
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="auth.username">Username</label>
+          <input type="text" class="form-input" placeholder="Enter your username">
+        </div>
+        <div class="form-group">
+          <label class="form-label" data-i18n="auth.email">Email</label>
+          <input type="email" class="form-input" placeholder="Enter your email">
+        </div>
+        <button class="btn btn-primary" onclick="showToast('Backend not configured.', 'error')">Save Changes</button>
+      </div>
+
+      <div class="settings-section">
+        <h3>Security</h3>
+        <div class="settings-item">
+          <div class="settings-info">
+            <h5>Change Password</h5>
+            <p>Update your account password</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="showToast('Backend not configured.', 'error')">Change</button>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <h5>Two-Factor Authentication</h5>
+            <p>Add an extra layer of security</p>
+          </div>
+          <div class="toggle"></div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <h5>Login Sessions</h5>
+            <p>Manage active sessions</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="showToast('Backend not configured.', 'error')">View</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3 data-i18n="nav.notifications">Notifications</h3>
+        <div class="settings-item">
+          <div class="settings-info">
+            <h5>Tournament Notifications</h5>
+            <p>Get notified about tournament updates</p>
+          </div>
+          <div class="toggle active"></div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <h5>Reward Notifications</h5>
+            <p>Get notified when rewards are added</p>
+          </div>
+          <div class="toggle active"></div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <h5>News & Announcements</h5>
+            <p>Platform news and updates</p>
+          </div>
+          <div class="toggle"></div>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <h5>Event Notifications</h5>
+            <p>Get notified about new events</p>
+          </div>
+          <div class="toggle active"></div>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>Preferences</h3>
+        <div class="settings-item">
+          <div class="settings-info">
+            <h5>Theme</h5>
+            <p>Dark mode (default)</p>
+          </div>
+          <select class="form-input" style="width: auto;">
+            <option>Dark</option>
+            <option>Light</option>
+          </select>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <h5>Language</h5>
+            <p>English</p>
+          </div>
+          <select class="form-input" style="width: auto;">
+            <option>English</option>
+            <option>Urdu</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>Account</h3>
+        <div class="settings-item">
+          <div class="settings-info">
+            <h5>Logout</h5>
+            <p>Sign out of your account</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="showToast('Backend not configured.', 'error')">Logout</button>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <h5>Delete Account</h5>
+            <p>Permanently delete your account</p>
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="showToast('Backend not configured.', 'error')" data-i18n="btn.delete">Delete</button>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/data-service.js"></script>
+    <script src="js/public-content.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

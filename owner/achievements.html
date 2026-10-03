@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Achievements — BOOYAHX Owner Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/owner.css">
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="container-wide">
+      <a href="../index.html" class="nav-brand">
+        <span class="logo-icon">BX</span>
+        BOOYAHX
+      </a>
+      <div class="nav-actions">
+        <span style="font-size: 0.875rem; color: var(--text-muted);">Owner Console</span>
+        <a href="../index.html" class="btn btn-outline btn-sm">View Site</a>
+        <button class="btn btn-secondary btn-sm" onclick="OwnerAuth.logout(); window.location.href='login.html';">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="owner-layout">
+    <aside class="owner-sidebar">
+      <div class="sidebar-header">
+        <h3>⚙️ Owner <span class="owner-badge">Admin</span></h3>
+      </div>
+      <nav class="sidebar-nav"></nav>
+    </aside>
+
+    <main class="owner-main">
+      <div class="owner-header">
+        <h1>Achievements</h1>
+        <div class="owner-user-info">
+          <div class="user-avatar" id="owner-avatar">U</div>
+          <div class="user-details">
+            <h4 id="owner-name">Loading...</h4>
+            <p id="owner-email">...</p>
+          </div>
+          <span class="owner-role-badge" id="owner-role">...</span>
+        </div>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-search"><input type="text" id="ach-key" placeholder="key (e.g. first_win)"></div>
+        <div class="filter-search"><input type="text" id="ach-name" placeholder="Display name"></div>
+        <button class="btn btn-primary btn-sm" id="ach-create">Create</button>
+      </div>
+      <div id="ach-content"><div class="empty-state"><div class="empty-icon">⏳</div><h3>LOADING...</h3></div></div>
+    </main>
+  </div>
+
+  <script src="../js/data-service.js"></script>
+  <script src="../js/owner-auth.js"></script>
+  <script>
+    OwnerAuth.requireAuth('achievements.manage');
+    OwnerUI.initLayout('achievements.html');
+
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const el = id => document.getElementById(id);
+    const show = (msg, type) => OwnerUI.toast(msg, type);
+    function loading() {
+      return OwnerUI.emptyState('LOADING...', 'Fetching data from the server.');
+    }
+    function failed(err) {
+      const msg = err && err.message === 'BACKEND UNAVAILABLE'
+        ? 'BACKEND UNAVAILABLE' : (err && err.message ? err.message : 'REQUEST FAILED');
+      return OwnerUI.errorState(msg);
+    }
+    function emptyBox(title, sub) { return OwnerUI.emptyState(title, sub); }
+    function table(cols, rowsHtml) {
+      return '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+        cols.map(c => '<th>' + esc(c) + '</th>').join('') +
+        '</tr></thead><tbody>' + rowsHtml + '</tbody></table></div>';
+    }
+    function fmt(v) {
+      if (v === null || v === undefined || v === '') return '—';
+      return esc(v);
+    }
+    function fmtDate(v) { return v ? esc(String(v).slice(0, 16).replace('T', ' ')) : '—'; }
+
+
+    async function loadAchievements() {
+      const box = el('ach-content');
+      box.innerHTML = loading();
+      try {
+        const data = await DataService.Achievements.all();
+        const rows = data.achievements || [];
+        if (!rows.length) {
+          box.innerHTML = emptyBox('NO ACHIEVEMENTS', 'Create an achievement definition above.');
+          return;
+        }
+        const body = rows.map(a => '<tr>' +
+          '<td>' + fmt(a.icon) + '</td>' +
+          '<td><strong>' + esc(a.key) + '</strong></td>' +
+          '<td>' + esc(a.name) + '</td>' +
+          '<td>' + fmt(a.description) + '</td>' +
+          '<td>' + fmt(a.unlocked_count) + '</td>' +
+          '<td>' + (a.enabled ? 'Enabled' : 'Disabled') + '</td>' +
+          '<td class="table-actions"><button class="btn btn-danger btn-sm" data-del="' + esc(a.id) + '">Delete</button></td>' +
+          '</tr>').join('');
+        box.innerHTML = table(['', 'Key', 'Name', 'Description', 'Unlocked', 'State', 'Actions'], body);
+        box.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => OwnerUI.confirm({
+          title: 'Delete Achievement', message: 'Unlocks already granted stay in the DB history? This removes the definition.',
+          type: 'danger', confirmText: 'Delete',
+          onConfirm: async () => {
+            try { await DataService.Achievements.remove(b.dataset.del); show('Deleted', 'success'); loadAchievements(); }
+            catch (e) { show(e.message || 'Delete failed', 'error'); }
+          }
+        })));
+      } catch (err) { box.innerHTML = failed(err); }
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      loadAchievements();
+      const btn = el('ach-create');
+      if (btn) btn.addEventListener('click', async () => {
+        const key = (el('ach-key').value || '').trim();
+        const name = (el('ach-name').value || '').trim();
+        if (!key || !name) { show('key and name are required', 'error'); return; }
+        try {
+          await DataService.Achievements.create({ key, name });
+          show('Achievement created', 'success');
+          el('ach-key').value = ''; el('ach-name').value = '';
+          loadAchievements();
+        } catch (e) { show(e.message || 'Create failed', 'error'); }
+      });
+    });
+
+  </script>
+</body>
+</html>

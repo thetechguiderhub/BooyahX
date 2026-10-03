@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Developer Console — BOOYAHX Owner Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .owner-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+      padding-top: 64px;
+    }
+
+    .owner-sidebar {
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      padding: var(--space-lg);
+      position: sticky;
+      top: 64px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+    }
+
+    .owner-sidebar .sidebar-header {
+      padding-bottom: var(--space-lg);
+      margin-bottom: var(--space-lg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .owner-sidebar .sidebar-header h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .owner-sidebar .sidebar-header h3 .owner-badge {
+      font-size: 0.625rem;
+      padding: 2px 8px;
+      background: var(--accent);
+      color: white;
+      border-radius: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .owner-sidebar .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .owner-sidebar .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all var(--transition-fast);
+    }
+
+    .owner-sidebar .sidebar-nav a:hover,
+    .owner-sidebar .sidebar-nav a.active {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .owner-sidebar .sidebar-nav a.active {
+      color: var(--accent);
+    }
+
+    .owner-sidebar .sidebar-nav .nav-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .owner-main {
+      padding: var(--space-xl);
+      overflow-y: auto;
+    }
+
+    .owner-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-xl);
+      flex-wrap: wrap;
+      gap: var(--space-md);
+    }
+
+    .owner-header h1 {
+      font-size: 1.75rem;
+    }
+
+    .owner-header .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .owner-user-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md) var(--space-lg);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+
+    .owner-user-info .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: white;
+    }
+
+    .owner-user-info .user-details h4 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .owner-user-info .user-details p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .owner-role-badge {
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .role-primary_owner {
+      background: rgba(124, 58, 237, 0.2);
+      color: var(--accent);
+    }
+
+    .role-owner {
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--info);
+    }
+
+    .role-admin {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .role-moderator {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    .role-support {
+      background: rgba(107, 114, 128, 0.2);
+      color: var(--text-secondary);
+    }
+
+    .dev-console-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-xl);
+      margin-bottom: var(--space-2xl);
+    }
+
+    .dev-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .dev-card h3 {
+      font-size: 1.125rem;
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-md);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .dev-card h3 .card-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      background: var(--accent-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md) 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .info-row:last-child {
+      border-bottom: none;
+    }
+
+    .info-row .info-label {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+    }
+
+    .info-row .info-value {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .info-row .info-value.success {
+      color: var(--success);
+    }
+
+    .info-row .info-value.warning {
+      color: var(--warning);
+    }
+
+    .info-row .info-value.error {
+      color: var(--danger);
+    }
+
+    .feature-flags {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-md);
+    }
+
+    .feature-flag {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md);
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-md);
+    }
+
+    .feature-flag .flag-info h5 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .feature-flag .flag-info p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .toggle {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: var(--bg-tertiary);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background var(--transition-fast);
+      border: 1px solid var(--border);
+    }
+
+    .toggle.active {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .toggle::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      background: white;
+      border-radius: 50%;
+      transition: transform var(--transition-fast);
+    }
+
+    .toggle.active::after {
+      transform: translateX(20px);
+    }
+
+    .maintenance-section {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-2xl);
+    }
+
+    .maintenance-section h3 {
+      font-size: 1.125rem;
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-md);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .maintenance-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-xl);
+      flex-wrap: wrap;
+    }
+
+    .maintenance-info {
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .maintenance-info p {
+      color: var(--text-secondary);
+      margin-bottom: var(--space-md);
+    }
+
+    .maintenance-actions {
+      display: flex;
+      gap: var(--space-sm);
+    }
+
+    .data-tools {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .data-tools h3 {
+      font-size: 1.125rem;
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-md);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-tools-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-md);
+    }
+
+    .data-tool-btn {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md) var(--space-lg);
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all var(--transition-fast);
+      cursor: pointer;
+    }
+
+    .data-tool-btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent);
+    }
+
+    .data-tool-btn.danger:hover {
+      border-color: var(--danger);
+    }
+
+    .data-tool-btn .tool-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-md);
+      background: var(--accent-glow);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent);
+    }
+
+    .data-tool-btn.danger .tool-icon {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--danger);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.875rem;
+      transition: all var(--transition-fast);
+      border: 1px solid transparent;
+      white-space: nowrap;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      color: white;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
+    }
+
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--bg-card-hover);
+      border-color: var(--border-light);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-primary);
+      border-color: var(--border-light);
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      background: var(--bg-tertiary);
+      border-color: var(--accent);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 0.8125rem;
+    }
+
+    .btn-icon {
+      padding: 8px;
+      border-radius: var(--radius-md);
+    }
+
+    @media (max-width: 1024px) {
+      .owner-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .owner-sidebar {
+        display: none;
+      }
+
+      .dev-console-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .data-tools-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="container-wide">
+      <a href="../index.html" class="nav-brand">
+        <span class="logo-icon">BX</span>
+        BOOYAHX
+      </a>
+      <div class="nav-actions">
+        <span style="font-size: 0.875rem; color: var(--text-muted);">Owner Console</span>
+        <a href="../index.html" class="btn btn-outline btn-sm">View Site</a>
+        <button class="btn btn-secondary btn-sm" onclick="OwnerAuth.logout(); window.location.href='login.html';">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="owner-layout">
+    <aside class="owner-sidebar">
+      <div class="sidebar-header">
+        <h3>⚙️ Owner <span class="owner-badge">Admin</span></h3>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="users.html"><span class="nav-icon">👥</span> Users</a>
+        <a href="staff.html"><span class="nav-icon">🛡️</span> Owners & Staff</a>
+        <a href="tournaments.html"><span class="nav-icon">🎮</span> Tournaments</a>
+        <a href="tournament-create.html"><span class="nav-icon">➕</span> Create Tournament</a>
+        <a href="promo-codes.html"><span class="nav-icon">🎟️</span> Promo Codes</a>
+        <a href="roles.html"><span class="nav-icon">🔐</span> Roles</a>
+        <a href="results.html"><span class="nav-icon">🏆</span> Results</a>
+        <a href="wallet.html"><span class="nav-icon">💰</span> Wallet</a>
+        <a href="deposits.html"><span class="nav-icon">💳</span> Deposits</a>
+        <a href="withdrawals.html"><span class="nav-icon">💸</span> Withdrawals</a>
+        <a href="events.html"><span class="nav-icon">🎉</span> Events</a>
+        <a href="news.html"><span class="nav-icon">📰</span> News</a>
+        <a href="updates.html"><span class="nav-icon">🔄</span> Updates</a>
+        <a href="reports.html"><span class="nav-icon">🚨</span> Reports</a>
+        <a href="developer.html" class="active"><span class="nav-icon">💻</span> Developer Console</a>
+        <a href="settings.html"><span class="nav-icon">⚙️</span> Settings</a>
+        <a href="audit.html"><span class="nav-icon">📋</span> Audit Logs</a>
+      </nav>
+    </aside>
+
+    <main class="owner-main">
+      <div class="owner-header">
+        <h1>Developer Console</h1>
+        <div class="owner-user-info">
+          <div class="user-avatar" id="owner-avatar">U</div>
+          <div class="user-details">
+            <h4 id="owner-name">Loading...</h4>
+            <p id="owner-email">...</p>
+          </div>
+          <span class="owner-role-badge" id="owner-role">...</span>
+        </div>
+      </div>
+
+      <div class="dev-console-grid">
+        <div class="dev-card">
+          <h3><span class="card-icon">ℹ️</span> System Information</h3>
+          <div class="info-row">
+            <span class="info-label">App Version</span>
+            <span class="info-value">1.0.0</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Website Version</span>
+            <span class="info-value">1.0.0</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Environment</span>
+            <span class="info-value warning">LOCAL DEVELOPMENT</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Database</span>
+            <span class="info-value error">NOT CONFIGURED</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Payments</span>
+            <span class="info-value error">NOT CONFIGURED</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">API</span>
+            <span class="info-value error">NOT CONFIGURED</span>
+          </div>
+        </div>
+
+        <div class="dev-card">
+          <h3><span class="card-icon">🚩</span> Feature Flags</h3>
+          <div class="feature-flags">
+            <div class="feature-flag">
+              <div class="flag-info">
+                <h5>Tournaments</h5>
+                <p>Enable tournament system</p>
+              </div>
+              <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+            </div>
+            <div class="feature-flag">
+              <div class="flag-info">
+                <h5>Wallet</h5>
+                <p>Enable wallet system</p>
+              </div>
+              <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+            </div>
+            <div class="feature-flag">
+              <div class="flag-info">
+                <h5>Deposits</h5>
+                <p>Enable deposit system</p>
+              </div>
+              <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+            </div>
+            <div class="feature-flag">
+              <div class="flag-info">
+                <h5>Withdrawals</h5>
+                <p>Enable withdrawal system</p>
+              </div>
+              <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+            </div>
+            <div class="feature-flag">
+              <div class="flag-info">
+                <h5>Events</h5>
+                <p>Enable events system</p>
+              </div>
+              <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+            </div>
+            <div class="feature-flag">
+              <div class="flag-info">
+                <h5>News</h5>
+                <p>Enable news system</p>
+              </div>
+              <div class="toggle active" onclick="this.classList.toggle('active')"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="maintenance-section">
+        <h3>Maintenance Mode</h3>
+        <div class="maintenance-content">
+          <div class="maintenance-info">
+            <p>Enable maintenance mode to temporarily disable the platform for users. This will display a maintenance message across the website.</p>
+            <p style="font-size: 0.875rem; color: var(--text-muted);">
+              <strong>Message:</strong> BooyahX is temporarily under maintenance. Please check back soon.
+            </p>
+          </div>
+          <div class="maintenance-actions">
+            <button class="btn btn-outline" onclick="OwnerUI.confirm({ title: 'Enable Maintenance', message: 'Are you sure you want to enable maintenance mode? Users will not be able to access the platform.', confirmText: 'Enable', type: 'warning', onConfirm: () => { OwnerUI.toast('Maintenance mode enabled', 'success'); } })">Enable</button>
+            <button class="btn btn-secondary" onclick="OwnerUI.toast('Maintenance mode disabled', 'success')">Disable</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="data-tools">
+        <h3>Data Tools</h3>
+        <div class="empty-state">
+          <div class="empty-icon">∅</div>
+          <h3>NO DEMO DATA TOOLS</h3>
+          <p>This platform runs only on real data. There is no demo data to refresh, reset, or clear.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/data-service.js"></script>
+  <script src="../js/owner-auth.js"></script>
+  <script>
+    OwnerAuth.requireAuth('developer.view');
+    OwnerUI.initLayout('developer.html');
+  </script>
+</body>
+</html>

@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roles & Permissions — BOOYAHX Owner Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .owner-layout {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      min-height: 100vh;
+      padding-top: 64px;
+    }
+
+    .owner-sidebar {
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      padding: var(--space-lg);
+      position: sticky;
+      top: 64px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+    }
+
+    .owner-sidebar .sidebar-header {
+      padding-bottom: var(--space-lg);
+      margin-bottom: var(--space-lg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .owner-sidebar .sidebar-header h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .owner-sidebar .sidebar-header h3 .owner-badge {
+      font-size: 0.625rem;
+      padding: 2px 8px;
+      background: var(--accent);
+      color: white;
+      border-radius: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .owner-sidebar .sidebar-nav {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+    }
+
+    .owner-sidebar .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all var(--transition-fast);
+    }
+
+    .owner-sidebar .sidebar-nav a:hover,
+    .owner-sidebar .sidebar-nav a.active {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .owner-sidebar .sidebar-nav a.active {
+      color: var(--accent);
+    }
+
+    .owner-sidebar .sidebar-nav .nav-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .owner-main {
+      padding: var(--space-xl);
+      overflow-y: auto;
+    }
+
+    .owner-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-xl);
+      flex-wrap: wrap;
+      gap: var(--space-md);
+    }
+
+    .owner-header h1 {
+      font-size: 1.75rem;
+    }
+
+    .owner-header .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .owner-user-info {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md) var(--space-lg);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+
+    .owner-user-info .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: white;
+    }
+
+    .owner-user-info .user-details h4 {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+
+    .owner-user-info .user-details p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .owner-role-badge {
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .role-primary_owner {
+      background: rgba(124, 58, 237, 0.2);
+      color: var(--accent);
+    }
+
+    .role-owner {
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--info);
+    }
+
+    .role-admin {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .role-moderator {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    .role-support {
+      background: rgba(107, 114, 128, 0.2);
+      color: var(--text-secondary);
+    }
+
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-xl);
+      margin-bottom: var(--space-2xl);
+    }
+
+    .role-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      transition: all var(--transition-base);
+    }
+
+    .role-card:hover {
+      border-color: var(--border-light);
+    }
+
+    .role-card .role-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-lg);
+      margin-bottom: var(--space-lg);
+    }
+
+    .role-card .role-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+    }
+
+    .role-card .role-info h3 {
+      font-size: 1.125rem;
+      margin-bottom: var(--space-xs);
+    }
+
+    .role-card .role-info p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .role-card .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: var(--space-sm);
+    }
+
+    .role-badge.primary {
+      background: rgba(124, 58, 237, 0.2);
+      color: var(--accent);
+    }
+
+    .role-badge.owner {
+      background: rgba(59, 130, 246, 0.2);
+      color: var(--info);
+    }
+
+    .role-badge.admin {
+      background: rgba(16, 185, 129, 0.2);
+      color: var(--success);
+    }
+
+    .role-badge.moderator {
+      background: rgba(245, 158, 11, 0.2);
+      color: var(--warning);
+    }
+
+    .role-badge.support {
+      background: rgba(107, 114, 128, 0.2);
+      color: var(--text-secondary);
+    }
+
+    .role-badge.user {
+      background: rgba(107, 114, 128, 0.2);
+      color: var(--text-secondary);
+    }
+
+    .role-card .role-permissions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-lg);
+    }
+
+    .role-card .permission-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-sm) var(--space-md);
+      background: var(--bg-tertiary);
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+    }
+
+    .role-card .permission-item .perm-name {
+      color: var(--text-secondary);
+    }
+
+    .role-card .permission-item .perm-status {
+      font-weight: 600;
+    }
+
+    .role-card .permission-item .perm-status.yes {
+      color: var(--success);
+    }
+
+    .role-card .permission-item .perm-status.no {
+      color: var(--text-muted);
+    }
+
+    .role-card .role-actions {
+      display: flex;
+      gap: var(--space-sm);
+      flex-wrap: wrap;
+    }
+
+    .permission-matrix {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+    }
+
+    .permission-matrix h3 {
+      font-size: 1.125rem;
+      margin-bottom: var(--space-lg);
+      padding-bottom: var(--space-md);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .permission-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .permission-table th,
+    .permission-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.875rem;
+    }
+
+    .permission-table th {
+      background: var(--bg-tertiary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .permission-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .permission-yes {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    .permission-no {
+      color: var(--text-muted);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.875rem;
+      transition: all var(--transition-fast);
+      border: 1px solid transparent;
+      white-space: nowrap;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+      color: white;
+      box-shadow: var(--shadow-glow);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 0 30px rgba(124, 58, 237, 0.3);
+    }
+
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--bg-card-hover);
+      border-color: var(--border-light);
+    }
+
+    .btn-outline {
+      background: transparent;
+      color: var(--text-primary);
+      border-color: var(--border-light);
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      background: var(--bg-tertiary);
+      border-color: var(--accent);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-danger {
+      background: var(--danger);
+      color: white;
+    }
+
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 0.8125rem;
+    }
+
+    .btn-icon {
+      padding: 8px;
+      border-radius: var(--radius-md);
+    }
+
+    @media (max-width: 1024px) {
+      .owner-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .owner-sidebar {
+        display: none;
+      }
+
+      .roles-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .permission-table {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="container-wide">
+      <a href="../index.html" class="nav-brand">
+        <span class="logo-icon">BX</span>
+        BOOYAHX
+      </a>
+      <div class="nav-actions">
+        <span style="font-size: 0.875rem; color: var(--text-muted);">Owner Console</span>
+        <a href="../index.html" class="btn btn-outline btn-sm">View Site</a>
+        <button class="btn btn-secondary btn-sm" onclick="OwnerAuth.logout(); window.location.href='login.html';">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="owner-layout">
+    <aside class="owner-sidebar">
+      <div class="sidebar-header">
+        <h3>⚙️ Owner <span class="owner-badge">Admin</span></h3>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="dashboard.html"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="users.html"><span class="nav-icon">👥</span> Users</a>
+        <a href="staff.html"><span class="nav-icon">🛡️</span> Owners & Staff</a>
+        <a href="tournaments.html"><span class="nav-icon">🎮</span> Tournaments</a>
+        <a href="tournament-create.html"><span class="nav-icon">➕</span> Create Tournament</a>
+        <a href="promo-codes.html"><span class="nav-icon">🎟️</span> Promo Codes</a>
+        <a href="roles.html" class="active"><span class="nav-icon">🔐</span> Roles</a>
+        <a href="results.html"><span class="nav-icon">🏆</span> Results</a>
+        <a href="wallet.html"><span class="nav-icon">💰</span> Wallet</a>
+        <a href="deposits.html"><span class="nav-icon">💳</span> Deposits</a>
+        <a href="withdrawals.html"><span class="nav-icon">💸</span> Withdrawals</a>
+        <a href="events.html"><span class="nav-icon">🎉</span> Events</a>
+        <a href="news.html"><span class="nav-icon">📰</span> News</a>
+        <a href="updates.html"><span class="nav-icon">🔄</span> Updates</a>
+        <a href="reports.html"><span class="nav-icon">🚨</span> Reports</a>
+        <a href="developer.html"><span class="nav-icon">💻</span> Developer Console</a>
+        <a href="settings.html"><span class="nav-icon">⚙️</span> Settings</a>
+        <a href="audit.html"><span class="nav-icon">📋</span> Audit Logs</a>
+      </nav>
+    </aside>
+
+    <main class="owner-main">
+      <div class="owner-header">
+        <h1>Roles & Permissions</h1>
+        <div class="header-actions">
+          <button class="btn btn-primary" onclick="OwnerUI.toast('Backend not configured.', 'error')">+ Create Role</button>
+        </div>
+      </div>
+
+      <div class="roles-grid">
+        <div class="role-card">
+          <div class="role-header">
+            <div class="role-icon" style="background: rgba(124, 58, 237, 0.2); color: var(--accent);">👑</div>
+            <div class="role-info">
+              <h3>Primary Owner</h3>
+              <p>Full system access and control</p>
+              <span class="role-badge primary">PRIMARY OWNER</span>
+            </div>
+          </div>
+          <div class="role-permissions">
+            <div class="permission-item">
+              <span class="perm-name">Dashboard Access</span>
+              <span class="perm-status yes">✓</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">User Management</span>
+              <span class="perm-status yes">✓</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Staff Management</span>
+              <span class="perm-status yes">✓</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Tournament Management</span>
+              <span class="perm-status yes">✓</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Developer Console</span>
+              <span class="perm-status yes">✓</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Settings Management</span>
+              <span class="perm-status yes">✓</span>
+            </div>
+          </div>
+          <div class="role-actions">
+            <button class="btn btn-outline btn-sm" disabled>Edit</button>
+            <button class="btn btn-outline btn-sm" disabled>Delete</button>
+          </div>
+        </div>
+
+        <div class="role-card">
+          <div class="role-header">
+            <div class="role-icon" style="background: rgba(59, 130, 246, 0.2); color: var(--info);">🛡️</div>
+            <div class="role-info">
+              <h3>Owner</h3>
+              <p>Owner-level access with some restrictions</p>
+              <span class="role-badge owner">OWNER</span>
+            </div>
+          </div>
+          <div class="role-permissions">
+            <div class="permission-item">
+              <span class="perm-name">Dashboard Access</span>
+              <span class="perm-status yes">✓</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">User Management</span>
+              <span class="perm-status yes">✓</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Staff Management</span>
+              <span class="perm-status no">✕</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Tournament Management</span>
+              <span class="perm-status yes">✓</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Developer Console</span>
+              <span class="perm-status yes">✓</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Settings Management</span>
+              <span class="perm-status yes">✓</span>
+            </div>
+          </div>
+          <div class="role-actions">
+            <button class="btn btn-outline btn-sm">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="OwnerUI.confirm({ title: 'Delete Role', message: 'Are you sure you want to delete this role?', confirmText: 'Delete', type: 'danger', onConfirm: () => { OwnerUI.toast('Role deleted', 'success'); } })">Delete</button>
+          </div>
+        </div>
+
+        <div class="role-card">
+          <div class="role-header">
+            <div class="role-icon" style="background: rgba(16, 185, 129, 0.2); color: var(--success);">⚙️</div>
+            <div class="role-info">
+              <h3>Admin</h3>
+              <p>Administrative access for daily operations</p>
+              <span class="role-badge admin">ADMIN</span>
+            </div>
+          </div>
+          <div class="role-permissions">
+            <div class="permission-item">
+              <span class="perm-name">Dashboard Access</span>
+              <span class="perm-status yes">✓</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">User Management</span>
+              <span class="perm-status yes">✓</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Staff Management</span>
+              <span class="perm-status no">✕</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Tournament Management</span>
+              <span class="perm-status yes">✓</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Developer Console</span>
+              <span class="perm-status no">✕</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Settings Management</span>
+              <span class="perm-status no">✕</span>
+            </div>
+          </div>
+          <div class="role-actions">
+            <button class="btn btn-outline btn-sm">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="OwnerUI.confirm({ title: 'Delete Role', message: 'Are you sure you want to delete this role?', confirmText: 'Delete', type: 'danger', onConfirm: () => { OwnerUI.toast('Role deleted', 'success'); } })">Delete</button>
+          </div>
+        </div>
+
+        <div class="role-card">
+          <div class="role-header">
+            <div class="role-icon" style="background: rgba(245, 158, 11, 0.2); color: var(--warning);">🔨</div>
+            <div class="role-info">
+              <h3>Moderator</h3>
+              <p>Community and content moderation</p>
+              <span class="role-badge moderator">MODERATOR</span>
+            </div>
+          </div>
+          <div class="role-permissions">
+            <div class="permission-item">
+              <span class="perm-name">Dashboard Access</span>
+              <span class="perm-status yes">✓</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">User Management</span>
+              <span class="perm-status no">✕</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Staff Management</span>
+              <span class="perm-status no">✕</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Tournament Management</span>
+              <span class="perm-status no">✕</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Developer Console</span>
+              <span class="perm-status no">✕</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Settings Management</span>
+              <span class="perm-status no">✕</span>
+            </div>
+          </div>
+          <div class="role-actions">
+            <button class="btn btn-outline btn-sm">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="OwnerUI.confirm({ title: 'Delete Role', message: 'Are you sure you want to delete this role?', confirmText: 'Delete', type: 'danger', onConfirm: () => { OwnerUI.toast('Role deleted', 'success'); } })">Delete</button>
+          </div>
+        </div>
+
+        <div class="role-card">
+          <div class="role-header">
+            <div class="role-icon" style="background: rgba(107, 114, 128, 0.2); color: var(--text-secondary);">🎧</div>
+            <div class="role-info">
+              <h3>Support</h3>
+              <p>Customer support and user assistance</p>
+              <span class="role-badge support">SUPPORT</span>
+            </div>
+          </div>
+          <div class="role-permissions">
+            <div class="permission-item">
+              <span class="perm-name">Dashboard Access</span>
+              <span class="perm-status yes">✓</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">User Management</span>
+              <span class="perm-status no">✕</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Staff Management</span>
+              <span class="perm-status no">✕</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Tournament Management</span>
+              <span class="perm-status no">✕</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Developer Console</span>
+              <span class="perm-status no">✕</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Settings Management</span>
+              <span class="perm-status no">✕</span>
+            </div>
+          </div>
+          <div class="role-actions">
+            <button class="btn btn-outline btn-sm">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="OwnerUI.confirm({ title: 'Delete Role', message: 'Are you sure you want to delete this role?', confirmText: 'Delete', type: 'danger', onConfirm: () => { OwnerUI.toast('Role deleted', 'success'); } })">Delete</button>
+          </div>
+        </div>
+
+        <div class="role-card">
+          <div class="role-header">
+            <div class="role-icon" style="background: rgba(107, 114, 128, 0.2); color: var(--text-secondary);">👤</div>
+            <div class="role-info">
+              <h3>User</h3>
+              <p>Standard player account</p>
+              <span class="role-badge user">USER</span>
+            </div>
+          </div>
+          <div class="role-permissions">
+            <div class="permission-item">
+              <span class="perm-name">Dashboard Access</span>
+              <span class="perm-status no">✕</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">User Management</span>
+              <span class="perm-status no">✕</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Staff Management</span>
+              <span class="perm-status no">✕</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Tournament Management</span>
+              <span class="perm-status no">✕</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Developer Console</span>
+              <span class="perm-status no">✕</span>
+            </div>
+            <div class="permission-item">
+              <span class="perm-name">Settings Management</span>
+              <span class="perm-status no">✕</span>
+            </div>
+          </div>
+          <div class="role-actions">
+            <button class="btn btn-outline btn-sm">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="OwnerUI.confirm({ title: 'Delete Role', message: 'Are you sure you want to delete this role?', confirmText: 'Delete', type: 'danger', onConfirm: () => { OwnerUI.toast('Role deleted', 'success'); } })">Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="permission-matrix">
+        <h3>Permission Matrix</h3>
+        <div style="overflow-x: auto;">
+          <table class="permission-table">
+            <thead>
+              <tr>
+                <th>Permission</th>
+                <th>Primary Owner</th>
+                <th>Owner</th>
+                <th>Admin</th>
+                <th>Moderator</th>
+                <th>Support</th>
+                <th>User</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Dashboard View</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-no">✕</td>
+              </tr>
+              <tr>
+                <td>User Management</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+              </tr>
+              <tr>
+                <td>Staff Management</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+              </tr>
+              <tr>
+                <td>Tournament Management</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+              </tr>
+              <tr>
+                <td>Result Management</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+              </tr>
+              <tr>
+                <td>Wallet Management</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+              </tr>
+              <tr>
+                <td>Deposit Verification</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+              </tr>
+              <tr>
+                <td>Withdrawal Approval</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+              </tr>
+              <tr>
+                <td>Developer Console</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+              </tr>
+              <tr>
+                <td>Settings Management</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+              </tr>
+              <tr>
+                <td>Audit Logs</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-yes">✓</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+                <td class="permission-no">✕</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/data-service.js"></script>
+  <script src="../js/owner-auth.js"></script>
+  <script>
+    OwnerAuth.requireAuth('staff.view');
+    OwnerUI.initLayout('staff.html');
+  </script>
+</body>
+</html>

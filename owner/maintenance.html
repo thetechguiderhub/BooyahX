@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maintenance Mode — BOOYAHX Owner Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/owner.css">
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="container-wide">
+      <a href="../index.html" class="nav-brand">
+        <span class="logo-icon">BX</span>
+        BOOYAHX
+      </a>
+      <div class="nav-actions">
+        <span style="font-size: 0.875rem; color: var(--text-muted);">Owner Console</span>
+        <a href="../index.html" class="btn btn-outline btn-sm">View Site</a>
+        <button class="btn btn-secondary btn-sm" onclick="OwnerAuth.logout(); window.location.href='login.html';">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="owner-layout">
+    <aside class="owner-sidebar">
+      <div class="sidebar-header">
+        <h3>⚙️ Owner <span class="owner-badge">Admin</span></h3>
+      </div>
+      <nav class="sidebar-nav"></nav>
+    </aside>
+
+    <main class="owner-main">
+      <div class="owner-header">
+        <h1>Maintenance Mode</h1>
+        <div class="owner-user-info">
+          <div class="user-avatar" id="owner-avatar">U</div>
+          <div class="user-details">
+            <h4 id="owner-name">Loading...</h4>
+            <p id="owner-email">...</p>
+          </div>
+          <span class="owner-role-badge" id="owner-role">...</span>
+        </div>
+      </div>
+
+      <div id="mnt-content"><div class="empty-state"><div class="empty-icon">⏳</div><h3>LOADING...</h3></div></div>
+      <div class="filter-bar" style="margin-top:16px;">
+        <button class="btn btn-danger btn-sm" id="mnt-on">Enable Maintenance</button>
+        <button class="btn btn-success btn-sm" id="mnt-off">Disable Maintenance</button>
+      </div>
+      <p class="table-note">Maintenance is enforced by the server. Staff accounts always keep access; the Primary Owner can always sign in.</p>
+    </main>
+  </div>
+
+  <script src="../js/data-service.js"></script>
+  <script src="../js/owner-auth.js"></script>
+  <script>
+    OwnerAuth.requireAuth('maintenance.manage');
+    OwnerUI.initLayout('maintenance.html');
+
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const el = id => document.getElementById(id);
+    const show = (msg, type) => OwnerUI.toast(msg, type);
+    function loading() {
+      return OwnerUI.emptyState('LOADING...', 'Fetching data from the server.');
+    }
+    function failed(err) {
+      const msg = err && err.message === 'BACKEND UNAVAILABLE'
+        ? 'BACKEND UNAVAILABLE' : (err && err.message ? err.message : 'REQUEST FAILED');
+      return OwnerUI.errorState(msg);
+    }
+    function emptyBox(title, sub) { return OwnerUI.emptyState(title, sub); }
+    function table(cols, rowsHtml) {
+      return '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+        cols.map(c => '<th>' + esc(c) + '</th>').join('') +
+        '</tr></thead><tbody>' + rowsHtml + '</tbody></table></div>';
+    }
+    function fmt(v) {
+      if (v === null || v === undefined || v === '') return '—';
+      return esc(v);
+    }
+    function fmtDate(v) { return v ? esc(String(v).slice(0, 16).replace('T', ' ')) : '—'; }
+
+
+    async function loadMaintenance() {
+      const box = el('mnt-content');
+      box.innerHTML = loading();
+      try {
+        const data = await DataService.Owner.maintenance();
+        const st = (data && data.state) || data || {};
+        const on = st.active === true;
+        box.innerHTML = '<div class="progress-banner" style="border-color:' + (on ? 'var(--danger,#ef4444)' : 'var(--success,#10b981)') + ';">' +
+          '<span>Maintenance: ' + (on ? 'ENABLED' : 'DISABLED') + '</span></div>' +
+          (st.message ? '<p class="table-note">Message: ' + esc(st.message) + '</p>' : '') +
+          (st.start || st.end ? '<p class="table-note">Window: ' + fmt(st.start) + ' → ' + fmt(st.end) + '</p>' : '');
+      } catch (err) { box.innerHTML = failed(err); }
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      loadMaintenance();
+      const set = async enabled => {
+        try {
+          await DataService.Owner.setMaintenance({ enabled, message: enabled ? 'Scheduled maintenance in progress.' : '' });
+          show(enabled ? 'Maintenance enabled' : 'Maintenance disabled', 'success');
+          loadMaintenance();
+        } catch (e) { show(e.message || 'Update failed', 'error'); }
+      };
+      el('mnt-on').addEventListener('click', () => OwnerUI.confirm({
+        title: 'Enable Maintenance', message: 'Public traffic will see a maintenance page. Staff keep access.',
+        type: 'warning', confirmText: 'Enable', onConfirm: () => set(true)
+      }));
+      el('mnt-off').addEventListener('click', () => set(false));
+    });
+
+  </script>
+</body>
+</html>

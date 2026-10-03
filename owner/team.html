@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Team Roles — BOOYAHX Owner Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/owner.css">
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="container-wide">
+      <a href="../index.html" class="nav-brand">
+        <span class="logo-icon">BX</span>
+        BOOYAHX
+      </a>
+      <div class="nav-actions">
+        <span style="font-size: 0.875rem; color: var(--text-muted);">Owner Console</span>
+        <a href="../index.html" class="btn btn-outline btn-sm">View Site</a>
+        <button class="btn btn-secondary btn-sm" onclick="OwnerAuth.logout(); window.location.href='login.html';">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="owner-layout">
+    <aside class="owner-sidebar">
+      <div class="sidebar-header">
+        <h3>⚙️ Owner <span class="owner-badge">Admin</span></h3>
+      </div>
+      <nav class="sidebar-nav"></nav>
+    </aside>
+
+    <main class="owner-main">
+      <div class="owner-header">
+        <h1>Team Roles</h1>
+        <div class="owner-user-info">
+          <div class="user-avatar" id="owner-avatar">U</div>
+          <div class="user-details">
+            <h4 id="owner-name">Loading...</h4>
+            <p id="owner-email">...</p>
+          </div>
+          <span class="owner-role-badge" id="owner-role">...</span>
+        </div>
+      </div>
+
+      <div class="owner-header" style="margin-top:24px;">
+        <h1>Official Team</h1>
+        <p style="color:var(--text-muted);font-size:0.875rem;margin-top:4px;">
+          BooyahX operating &amp; build team. Display roles are presentation only — security/RBAC roles on each account are unchanged.
+        </p>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-search">
+          <input type="text" id="ot-assign-user" placeholder="Username or email of a REAL user">
+        </div>
+        <select id="ot-assign-role" class="filter-search" style="flex:0 0 240px;">
+          <option value="">Select position...</option>
+        </select>
+        <button class="btn btn-primary btn-sm" id="ot-assign-btn">Assign to Official Team</button>
+      </div>
+      <div id="official-team-content"><div class="empty-state"><div class="empty-icon">⏳</div><h3>LOADING...</h3></div></div>
+
+      <div class="owner-header" style="margin-top:32px;">
+        <h1>Team Roles (Security / RBAC)</h1>
+      </div>
+
+      <div class="filter-bar">
+        <div class="filter-search">
+          <input type="text" id="assign-username" placeholder="Username to assign">
+        </div>
+        <select id="assign-role" class="filter-search" style="flex:0 0 220px;">
+          <option value="">Select role...</option>
+        </select>
+        <button class="btn btn-primary btn-sm" id="assign-btn">Assign Role</button>
+      </div>
+      <div id="team-content"><div class="empty-state"><div class="empty-icon">⏳</div><h3>LOADING...</h3></div></div>
+    </main>
+  </div>
+
+  <script src="../js/data-service.js"></script>
+  <script src="../js/owner-auth.js"></script>
+  <script>
+    OwnerAuth.requireAuth('staff.view');
+    OwnerUI.initLayout('team.html');
+
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const el = id => document.getElementById(id);
+    const show = (msg, type) => OwnerUI.toast(msg, type);
+    function loading() {
+      return OwnerUI.emptyState('LOADING...', 'Fetching data from the server.');
+    }
+    function failed(err) {
+      const msg = err && err.message === 'BACKEND UNAVAILABLE'
+        ? 'BACKEND UNAVAILABLE' : (err && err.message ? err.message : 'REQUEST FAILED');
+      return OwnerUI.errorState(msg);
+    }
+    function emptyBox(title, sub) { return OwnerUI.emptyState(title, sub); }
+    function table(cols, rowsHtml) {
+      return '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+        cols.map(c => '<th>' + esc(c) + '</th>').join('') +
+        '</tr></thead><tbody>' + rowsHtml + '</tbody></table></div>';
+    }
+    function fmt(v) {
+      if (v === null || v === undefined || v === '') return '—';
+      return esc(v);
+    }
+    function fmtDate(v) { return v ? esc(String(v).slice(0, 16).replace('T', ' ')) : '—'; }
+
+
+    async function loadTeam() {
+      const box = el('team-content');
+      box.innerHTML = loading();
+      try {
+        const [data, rolesData] = await Promise.all([
+          DataService.Owner.team(),
+          DataService.Owner.roles().catch(() => ({ roles: [] }))
+        ]);
+        const rows = data.team || [];
+        const roles = (rolesData.roles || []).filter(r => r.name !== 'USER');
+
+        // Fill role select from real roles the server returns
+        const sel = el('assign-role');
+        if (sel && sel.options.length <= 1 && roles.length) {
+          roles.forEach(r => {
+            const opt = document.createElement('option');
+            opt.value = r.name;
+            opt.textContent = r.name + ' — ' + (r.description || '');
+            sel.appendChild(opt);
+          });
+        }
+
+        if (!rows.length) {
+          box.innerHTML = emptyBox('NO TEAM ROLES', 'Assign a role above to build your staff team.');
+          return;
+        }
+
+        const body = rows.map(r => {
+          const roleName = r.role || r.name;
+          const available = r.available === true;
+          return '<tr>' +
+            '<td><strong>' + esc(roleName) + '</strong></td>' +
+            '<td>' + esc(r.description || r.display_name || '—') + '</td>' +
+            '<td>' + (available
+              ? '<span style="color:var(--warning,#f59e0b);font-weight:700;">Available</span>'
+              : (r.members || []).map(m => esc(m.username)).join(', ')) + '</td>' +
+            '<td>' + (available ? '—' : (r.members || []).map(m => fmtDate(m.assigned_at)).join(', ')) + '</td>' +
+            '<td class="table-actions">' +
+              (available ? '—'
+                : (r.members || []).map(m =>
+                    '<button class="btn btn-danger btn-sm" data-user="' + esc(m.id) +
+                    '" data-role="' + esc(roleName) + '" data-act="revoke">Revoke</button>').join(' ')) +
+            '</td></tr>';
+        }).join('');
+
+        box.innerHTML = table(['Role', 'Description', 'Members', 'Assigned', 'Actions'], body);
+
+        box.querySelectorAll('[data-act="revoke"]').forEach(btn => {
+          btn.addEventListener('click', () => OwnerUI.confirm({
+            title: 'Revoke Role',
+            message: 'Remove this role assignment? The user keeps their account.',
+            type: 'danger', confirmText: 'Revoke',
+            onConfirm: async () => {
+              try {
+                await DataService.Owner.revokeRole({ user_id: btn.dataset.user, role: btn.dataset.role });
+                show('Role revoked', 'success');
+                loadTeam();
+              } catch (e) { show(e.message || 'Revoke failed', 'error'); }
+            }
+          }));
+        });
+      } catch (err) { box.innerHTML = failed(err); }
+    }
+
+    // ============================================
+    // OFFICIAL TEAM (real backend records only)
+    // ============================================
+
+    async function loadOfficialTeam() {
+      const box = el('official-team-content');
+      box.innerHTML = loading();
+      try {
+        const data = await DataService.Owner.officialTeam();
+        const positions = data.positions || [];
+
+        const sel = el('ot-assign-role');
+        if (sel && sel.options.length <= 1 && positions.length) {
+          positions.forEach(p => {
+            const opt = document.createElement('option');
+            opt.value = p.display_role;
+            opt.textContent = p.title;
+            sel.appendChild(opt);
+          });
+        }
+
+        if (!positions.length) {
+          box.innerHTML = emptyBox('NO OFFICIAL TEAM POSITIONS', 'No positions are configured on the server.');
+          return;
+        }
+
+        const body = positions.map(p => {
+          const activeMembers = (p.members || []).filter(m => m.active);
+          const inactiveMembers = (p.members || []).filter(m => !m.active);
+          const available = activeMembers.length === 0;
+
+          const memberCell = available
+            ? '<span style="color:var(--warning,#f59e0b);font-weight:700;">Available</span>'
+            : activeMembers.map(m =>
+                '<div style="margin-bottom:6px;">' +
+                  '<strong>' + esc(m.name || m.username) + '</strong>' +
+                  (m.email ? '<div style="font-size:0.75rem;color:var(--text-muted);">' + esc(m.email) + '</div>' : '') +
+                '</div>').join('');
+
+          const securityCell = available ? '—' : activeMembers.map(m =>
+            (m.security_roles && m.security_roles.length ? m.security_roles : ['USER']).map(esc).join(', ')).join(', ');
+
+          const inactiveNote = inactiveMembers.length
+            ? '<div style="font-size:0.75rem;color:var(--text-muted);margin-top:6px;">Inactive: ' +
+              inactiveMembers.map(m => esc(m.name || m.username)).join(', ') + '</div>' : '';
+
+          const actions = available ? '—' : activeMembers.map(m =>
+            '<button class="btn btn-secondary btn-sm" data-ot-id="' + esc(m.id) + '" data-ot-act="deactivate">Deactivate</button> ' +
+            '<button class="btn btn-danger btn-sm" data-ot-id="' + esc(m.id) + '" data-ot-act="remove">Remove</button>').join(' ');
+
+          return '<tr>' +
+            '<td><strong>' + esc(p.title) + '</strong></td>' +
+            '<td>' + memberCell + inactiveNote + '</td>' +
+            '<td>' + (available ? '—' : esc(activeMembers.map(m => p.display_role).join(', '))) + '</td>' +
+            '<td>' + securityCell + '</td>' +
+            '<td class="table-actions">' + actions + '</td>' +
+            '</tr>';
+        }).join('');
+
+        box.innerHTML = table(['Position', 'Member (real account)', 'Team Role (display)', 'Security Role (RBAC)', 'Actions'], body);
+
+        box.querySelectorAll('[data-ot-act]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.dataset.otId;
+            const act = btn.dataset.otAct;
+            if (act === 'deactivate') {
+              OwnerUI.confirm({
+                title: 'Deactivate Assignment',
+                message: 'Hide this member from the Official Team? The user account and its RBAC role are not changed.',
+                type: 'warning', confirmText: 'Deactivate',
+                onConfirm: async () => {
+                  try { await DataService.Owner.setOfficialTeamActive({ id, active: false }); show('Assignment deactivated', 'success'); loadOfficialTeam(); }
+                  catch (e) { show(e.message || 'Failed', 'error'); }
+                }
+              });
+            } else {
+              OwnerUI.confirm({
+                title: 'Remove Assignment',
+                message: 'Remove this Official Team assignment? The position will show Available. The user account and its RBAC role are not changed.',
+                type: 'danger', confirmText: 'Remove',
+                onConfirm: async () => {
+                  try { await DataService.Owner.revokeOfficialTeam({ id }); show('Assignment removed', 'success'); loadOfficialTeam(); }
+                  catch (e) { show(e.message || 'Failed', 'error'); }
+                }
+              });
+            }
+          });
+        });
+      } catch (err) { box.innerHTML = failed(err); }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadTeam();
+      loadOfficialTeam();
+      const otBtn = el('ot-assign-btn');
+      if (otBtn) otBtn.addEventListener('click', async () => {
+        const user = (el('ot-assign-user').value || '').trim();
+        const displayRole = el('ot-assign-role').value;
+        if (!user || !displayRole) { show('Enter a username/email and select a position', 'error'); return; }
+        try {
+          await DataService.Owner.assignOfficialTeam({ user, display_role: displayRole });
+          show('Assigned to Official Team', 'success');
+          el('ot-assign-user').value = '';
+          loadOfficialTeam();
+        } catch (e) { show(e.message || 'Assign failed', 'error'); }
+      });
+      const btn = el('assign-btn');
+      if (btn) btn.addEventListener('click', async () => {
+        const username = (el('assign-username').value || '').trim();
+        const role = el('assign-role').value;
+        if (!username || !role) { show('Enter a username and select a role', 'error'); return; }
+        try {
+          await DataService.Owner.assignRole({ username, role });
+          show('Role assigned', 'success');
+          el('assign-username').value = '';
+          loadTeam();
+        } catch (e) { show(e.message || 'Assign failed', 'error'); }
+      });
+    });
+
+  </script>
+</body>
+</html>

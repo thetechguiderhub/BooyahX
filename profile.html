@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile — BOOYAHX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="container-wide">
+      <a href="index.html" class="nav-brand">
+        <span class="logo-icon">BX</span>
+        BOOYAHX
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+        <li><a href="tournaments.html" data-i18n="nav.tournaments">Tournaments</a></li>
+        <li><a href="leaderboard.html" data-i18n="nav.leaderboard">Leaderboard</a></li>
+        <li><a href="events.html" data-i18n="nav.events">Events</a></li>
+        <li><a href="news.html" data-i18n="nav.news">News</a></li>
+        <li><a href="about.html" data-i18n="nav.about">About</a></li>
+        <li><a href="rules.html" data-i18n="nav.rules">Rules</a></li>
+        <li><a href="support.html" data-i18n="nav.support">Support</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button id="lang-toggle" class="btn btn-outline btn-sm" type="button">اردو</button>
+        <div class="nav-balance">
+          <span class="coin-icon">C</span>
+          <span>0</span>
+        </div>
+        <a href="profile.html" class="nav-user">
+          <span class="nav-avatar">U</span>
+        </a>
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mobile-menu" id="mobile-menu">
+    <ul class="nav-links">
+      <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+      <li><a href="tournaments.html" data-i18n="nav.tournaments">Tournaments</a></li>
+      <li><a href="leaderboard.html" data-i18n="nav.leaderboard">Leaderboard</a></li>
+      <li><a href="events.html" data-i18n="nav.events">Events</a></li>
+      <li><a href="news.html" data-i18n="nav.news">News</a></li>
+      <li><a href="updates.html" data-i18n="nav.updates">Updates</a></li>
+      <li><a href="about.html" data-i18n="nav.about">About</a></li>
+      <li><a href="rules.html" data-i18n="nav.rules">Rules</a></li>
+      <li><a href="support.html" data-i18n="nav.support">Support</a></li>
+    </ul>
+    <div class="mobile-menu-section">
+      <h6>Account</h6>
+      <ul class="nav-links">
+        <li><a href="profile.html" data-i18n="nav.profile">Profile</a></li>
+        <li><a href="wallet.html" data-i18n="nav.wallet">Wallet</a></li>
+        <li><a href="my-tournaments.html" data-i18n="nav.my_tournaments">My Tournaments</a></li>
+        <li><a href="notifications.html" data-i18n="nav.notifications">Notifications</a></li>
+        <li><a href="settings.html" data-i18n="nav.settings">Settings</a></li>
+        <li><a href="index.html">Logout</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <a href="profile.html" class="active"><span class="nav-icon">👤</span> Profile</a>
+        <a href="wallet.html"><span class="nav-icon">💰</span> Wallet</a>
+        <a href="my-tournaments.html"><span class="nav-icon">🎮</span> My Tournaments</a>
+        <a href="notifications.html"><span class="nav-icon">🔔</span> Notifications</a>
+        <a href="settings.html"><span class="nav-icon">⚙️</span> Settings</a>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="card" style="margin-bottom: var(--space-xl);">
+        <div style="display: flex; align-items: center; gap: var(--space-xl); flex-wrap: wrap;">
+          <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-secondary)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 800; color: white;">U</div>
+          <div>
+            <h2 style="margin-bottom: var(--space-xs);">User</h2>
+            <p style="color: var(--text-muted); font-size: 0.875rem;">User ID: BX-0000-000</p>
+            <p style="color: var(--text-muted); font-size: 0.875rem;">Member since: N/A</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-grid" style="margin-bottom: var(--space-xl);">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: var(--accent-glow); color: var(--accent);">🎮</div>
+          <div class="stat-value">0</div>
+          <div class="stat-label">Tournaments Joined</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">✅</div>
+          <div class="stat-value">0</div>
+          <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--warning);">🏆</div>
+          <div class="stat-value">0</div>
+          <div class="stat-label" data-i18n="lb.wins">Wins</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(59, 130, 246, 0.15); color: var(--info);">💰</div>
+          <div class="stat-value">0</div>
+          <div class="stat-label">Rewards Earned</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-bottom: var(--space-lg);">Account Settings</h3>
+        <div class="settings-item">
+          <div class="settings-info">
+            <h5 data-i18n="auth.email">Email</h5>
+            <p>Not set</p>
+          </div>
+          <a href="settings.html" class="btn btn-outline btn-sm" data-i18n="btn.edit">Edit</a>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <h5 data-i18n="auth.password">Password</h5>
+            <p>Last changed: Never</p>
+          </div>
+          <a href="settings.html" class="btn btn-outline btn-sm">Change</a>
+        </div>
+        <div class="settings-item">
+          <div class="settings-info">
+            <h5>Account Status</h5>
+            <p>Active</p>
+          </div>
+          <span class="status-badge status-completed"><span class="status-dot"></span>Active</span>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/data-service.js"></script>
+    <script src="js/public-content.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Owner Console — BOOYAHX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .owner-login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-lg);
+      background: var(--bg-primary);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .owner-login-page::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124, 58, 237, 0.1), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 50%, rgba(59, 130, 246, 0.05), transparent);
+    }
+
+    .owner-login-container {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+    }
+
+    .owner-login-header {
+      text-align: center;
+      margin-bottom: var(--space-2xl);
+    }
+
+    .owner-login-logo {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-secondary));
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 1.5rem;
+      color: white;
+      margin: 0 auto var(--space-lg);
+    }
+
+    .owner-login-header h1 {
+      font-size: 1.5rem;
+      margin-bottom: var(--space-sm);
+    }
+
+    .owner-login-header p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    .owner-login-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-2xl);
+    }
+
+    .owner-login-card .form-group {
+      margin-bottom: var(--space-lg);
+    }
+
+    .owner-login-card .form-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: var(--space-sm);
+      display: block;
+    }
+
+    .owner-login-card .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 0.9375rem;
+      transition: all var(--transition-fast);
+    }
+
+    .owner-login-card .form-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+      outline: none;
+    }
+
+    .owner-login-actions {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-sm);
+      margin-top: var(--space-xl);
+    }
+
+    .owner-login-footer {
+      text-align: center;
+      margin-top: var(--space-xl);
+      padding-top: var(--space-xl);
+      border-top: 1px solid var(--border);
+    }
+
+    .owner-login-footer a {
+      color: var(--accent);
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .owner-login-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .demo-mode-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning);
+      border-radius: 20px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: var(--space-lg);
+    }
+
+    .login-error {
+      display: none;
+      padding: 12px 16px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: var(--radius-md);
+      color: var(--danger);
+      font-size: 0.875rem;
+      margin-bottom: var(--space-lg);
+    }
+
+    .login-error.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="owner-login-page">
+    <div class="owner-login-container">
+      <div class="owner-login-header">
+        <div class="owner-login-logo">BX</div>
+        <h1>BOOYAHX OWNER CONSOLE</h1>
+        <p>Sign in to access the management dashboard</p>
+        <div style="margin-top: var(--space-md);">
+          <span class="demo-mode-badge">Local Development</span>
+        </div>
+      </div>
+
+      <div class="owner-login-card">
+        <div class="login-error" id="login-error"></div>
+        <form id="owner-login-form">
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" id="login-email" placeholder="Enter your email" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-input" id="login-password" placeholder="Enter your password" required>
+          </div>
+          <div class="owner-login-actions">
+            <button type="submit" class="btn btn-primary btn-block btn-lg">SIGN IN</button>
+            <a href="../index.html" class="btn btn-outline btn-block">BACK TO BOOYAHX</a>
+          </div>
+        </form>
+      </div>
+
+      <div class="owner-login-footer">
+        <p style="font-size: 0.75rem; color: var(--text-muted);">
+          Authorized personnel only. All login attempts are logged.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/data-service.js"></script>
+  <script src="../js/owner-auth.js"></script>
+  <script>
+    document.getElementById('owner-login-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const errorEl = document.getElementById('login-error');
+
+      try {
+        const result = await OwnerAuth.authenticate(email, password);
+
+        // Access is decided by backend permissions, not a hardcoded role list.
+        if (!OwnerAuth.canAccessConsole()) {
+          errorEl.textContent = 'Access denied. Your account has no console permissions.';
+          errorEl.classList.add('show');
+          await OwnerAuth.logout();
+          return;
+        }
+
+        // Redirect to dashboard
+        window.location.href = 'dashboard.html';
+      } catch (error) {
+        errorEl.textContent = error.message || 'Authentication failed';
+        errorEl.classList.add('show');
+      }
+    });
+  </script>
+</body>
+</html>

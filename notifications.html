@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications — BOOYAHX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="container-wide">
+      <a href="index.html" class="nav-brand">
+        <span class="logo-icon">BX</span>
+        BOOYAHX
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+        <li><a href="tournaments.html" data-i18n="nav.tournaments">Tournaments</a></li>
+        <li><a href="leaderboard.html" data-i18n="nav.leaderboard">Leaderboard</a></li>
+        <li><a href="events.html" data-i18n="nav.events">Events</a></li>
+        <li><a href="news.html" data-i18n="nav.news">News</a></li>
+        <li><a href="about.html" data-i18n="nav.about">About</a></li>
+        <li><a href="rules.html" data-i18n="nav.rules">Rules</a></li>
+        <li><a href="support.html" data-i18n="nav.support">Support</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button id="lang-toggle" class="btn btn-outline btn-sm" type="button">اردو</button>
+        <div class="nav-balance">
+          <span class="coin-icon">C</span>
+          <span>0</span>
+        </div>
+        <a href="profile.html" class="nav-user">
+          <span class="nav-avatar">U</span>
+        </a>
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="mobile-menu" id="mobile-menu">
+    <ul class="nav-links">
+      <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+      <li><a href="tournaments.html" data-i18n="nav.tournaments">Tournaments</a></li>
+      <li><a href="leaderboard.html" data-i18n="nav.leaderboard">Leaderboard</a></li>
+      <li><a href="events.html" data-i18n="nav.events">Events</a></li>
+      <li><a href="news.html" data-i18n="nav.news">News</a></li>
+      <li><a href="updates.html" data-i18n="nav.updates">Updates</a></li>
+      <li><a href="about.html" data-i18n="nav.about">About</a></li>
+      <li><a href="rules.html" data-i18n="nav.rules">Rules</a></li>
+      <li><a href="support.html" data-i18n="nav.support">Support</a></li>
+    </ul>
+    <div class="mobile-menu-section">
+      <h6>Account</h6>
+      <ul class="nav-links">
+        <li><a href="profile.html" data-i18n="nav.profile">Profile</a></li>
+        <li><a href="wallet.html" data-i18n="nav.wallet">Wallet</a></li>
+        <li><a href="my-tournaments.html" data-i18n="nav.my_tournaments">My Tournaments</a></li>
+        <li><a href="notifications.html" data-i18n="nav.notifications">Notifications</a></li>
+        <li><a href="settings.html" data-i18n="nav.settings">Settings</a></li>
+        <li><a href="index.html">Logout</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <a href="profile.html"><span class="nav-icon">👤</span> Profile</a>
+        <a href="wallet.html"><span class="nav-icon">💰</span> Wallet</a>
+        <a href="my-tournaments.html"><span class="nav-icon">🎮</span> My Tournaments</a>
+        <a href="notifications.html" class="active"><span class="nav-icon">🔔</span> Notifications</a>
+        <a href="settings.html"><span class="nav-icon">⚙️</span> Settings</a>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <div class="owner-header">
+        <h1>NOTIFICATIONS</h1>
+        <button class="btn btn-outline btn-sm" onclick="showToast('Backend not configured.', 'error')">Mark All as Read</button>
+      </div>
+
+      <div id="notifications-list">
+        <div class="empty-state">
+          <div class="empty-icon">🔔</div>
+          <h3 data-i18n="empty.notifications">NO NOTIFICATIONS</h3>
+          <p>You're all caught up!</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/data-service.js"></script>
+    <script src="js/public-content.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

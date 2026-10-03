@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verification Queue — BOOYAHX Owner Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/owner.css">
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="container-wide">
+      <a href="../index.html" class="nav-brand">
+        <span class="logo-icon">BX</span>
+        BOOYAHX
+      </a>
+      <div class="nav-actions">
+        <span style="font-size: 0.875rem; color: var(--text-muted);">Owner Console</span>
+        <a href="../index.html" class="btn btn-outline btn-sm">View Site</a>
+        <button class="btn btn-secondary btn-sm" onclick="OwnerAuth.logout(); window.location.href='login.html';">Logout</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="owner-layout">
+    <aside class="owner-sidebar">
+      <div class="sidebar-header">
+        <h3>⚙️ Owner <span class="owner-badge">Admin</span></h3>
+      </div>
+      <nav class="sidebar-nav"></nav>
+    </aside>
+
+    <main class="owner-main">
+      <div class="owner-header">
+        <h1>Verification Queue</h1>
+        <div class="owner-user-info">
+          <div class="user-avatar" id="owner-avatar">U</div>
+          <div class="user-details">
+            <h4 id="owner-name">Loading...</h4>
+            <p id="owner-email">...</p>
+          </div>
+          <span class="owner-role-badge" id="owner-role">...</span>
+        </div>
+      </div>
+
+      <div id="ver-content"><div class="empty-state"><div class="empty-icon">⏳</div><h3>LOADING...</h3></div></div>
+    </main>
+  </div>
+
+  <script src="../js/data-service.js"></script>
+  <script src="../js/owner-auth.js"></script>
+  <script>
+    OwnerAuth.requireAuth('verification.view');
+    OwnerUI.initLayout('verification.html');
+
+    const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const el = id => document.getElementById(id);
+    const show = (msg, type) => OwnerUI.toast(msg, type);
+    function loading() {
+      return OwnerUI.emptyState('LOADING...', 'Fetching data from the server.');
+    }
+    function failed(err) {
+      const msg = err && err.message === 'BACKEND UNAVAILABLE'
+        ? 'BACKEND UNAVAILABLE' : (err && err.message ? err.message : 'REQUEST FAILED');
+      return OwnerUI.errorState(msg);
+    }
+    function emptyBox(title, sub) { return OwnerUI.emptyState(title, sub); }
+    function table(cols, rowsHtml) {
+      return '<div class="table-wrap"><table class="data-table"><thead><tr>' +
+        cols.map(c => '<th>' + esc(c) + '</th>').join('') +
+        '</tr></thead><tbody>' + rowsHtml + '</tbody></table></div>';
+    }
+    function fmt(v) {
+      if (v === null || v === undefined || v === '') return '—';
+      return esc(v);
+    }
+    function fmtDate(v) { return v ? esc(String(v).slice(0, 16).replace('T', ' ')) : '—'; }
+
+
+    async function loadVerifications() {
+      const box = el('ver-content');
+      box.innerHTML = loading();
+      try {
+        const data = await DataService.Owner.verifications();
+        const rows = data.verifications || [];
+        if (!rows.length) {
+          box.innerHTML = emptyBox('NO PENDING VERIFICATIONS', 'User submissions appear here for review.');
+          return;
+        }
+        const body = rows.map(v => '<tr>' +
+          '<td>' + esc(v.username || v.user_id) + '</td>' +
+          '<td>' + fmt(v.document_type || v.type) + '</td>' +
+          '<td>' + fmtDate(v.submitted_at || v.created_at) + '</td>' +
+          '<td>' + fmt(v.status) + '</td>' +
+          '<td class="table-actions">' +
+            (v.status === 'pending'
+              ? '<button class="btn btn-success btn-sm" data-ok="' + esc(v.id) + '">Verify</button> ' +
+                '<button class="btn btn-danger btn-sm" data-no="' + esc(v.id) + '">Reject</button>'
+              : '—') +
+          '</td></tr>').join('');
+        box.innerHTML = table(['User', 'Document', 'Submitted', 'Status', 'Actions'], body);
+
+        box.querySelectorAll('[data-ok]').forEach(b => b.addEventListener('click', () => OwnerUI.confirm({
+          title: 'Verify Identity', message: 'Confirm this identity document is valid.',
+          type: 'warning', confirmText: 'Verify',
+          onConfirm: async () => {
+            try { await DataService.Owner.reviewVerification(b.dataset.ok, { action: 'verify' }); show('Verified', 'success'); loadVerifications(); }
+            catch (e) { show(e.message || 'Verify failed', 'error'); }
+          }
+        })));
+        box.querySelectorAll('[data-no]').forEach(b => b.addEventListener('click', () => OwnerUI.confirm({
+          title: 'Reject Verification', message: 'The user can submit again.', type: 'danger', confirmText: 'Reject',
+          onConfirm: async () => {
+            try { await DataService.Owner.reviewVerification(b.dataset.no, { action: 'reject' }); show('Rejected', 'success'); loadVerifications(); }
+            catch (e) { show(e.message || 'Reject failed', 'error'); }
+          }
+        })));
+      } catch (err) { box.innerHTML = failed(err); }
+    }
+    document.addEventListener('DOMContentLoaded', loadVerifications);
+
+  </script>
+</body>
+</html>

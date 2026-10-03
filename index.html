@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BOOYAHX — ENTER. COMPETE. CONQUER.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav class="navbar" id="navbar">
+    <div class="container-wide">
+      <a href="index.html" class="nav-brand">
+        <span class="logo-icon">BX</span>
+        BOOYAHX
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html" class="active" data-i18n="nav.home">Home</a></li>
+        <li><a href="tournaments.html" data-i18n="nav.tournaments">Tournaments</a></li>
+        <li><a href="leaderboard.html" data-i18n="nav.leaderboard">Leaderboard</a></li>
+        <li><a href="events.html" data-i18n="nav.events">Events</a></li>
+        <li><a href="news.html" data-i18n="nav.news">News</a></li>
+        <li><a href="about.html" data-i18n="nav.about">About</a></li>
+        <li><a href="rules.html" data-i18n="nav.rules">Rules</a></li>
+        <li><a href="support.html" data-i18n="nav.support">Support</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button id="lang-toggle" class="btn btn-outline btn-sm" type="button">اردو</button>
+        <a href="signin.html" class="btn btn-outline btn-sm" data-i18n="nav.signin">Sign In</a>
+        <a href="signup.html" class="btn btn-primary btn-sm" data-i18n="nav.create_account">Create Account</a>
+        <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobile-menu">
+    <ul class="nav-links">
+      <li><a href="index.html" class="active" data-i18n="nav.home">Home</a></li>
+      <li><a href="tournaments.html" data-i18n="nav.tournaments">Tournaments</a></li>
+      <li><a href="leaderboard.html" data-i18n="nav.leaderboard">Leaderboard</a></li>
+      <li><a href="events.html" data-i18n="nav.events">Events</a></li>
+      <li><a href="news.html" data-i18n="nav.news">News</a></li>
+      <li><a href="updates.html" data-i18n="nav.updates">Updates</a></li>
+      <li><a href="about.html" data-i18n="nav.about">About</a></li>
+      <li><a href="rules.html" data-i18n="nav.rules">Rules</a></li>
+      <li><a href="support.html" data-i18n="nav.support">Support</a></li>
+    </ul>
+    <div class="mobile-menu-section">
+      <h6>Account</h6>
+      <ul class="nav-links">
+        <li><a href="signin.html" data-i18n="nav.signin">Sign In</a></li>
+        <li><a href="signup.html" data-i18n="nav.create_account">Create Account</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <h1>ENTER. COMPETE.<br><span class="text-gradient">CONQUER.</span></h1>
+      <p class="tagline">Compete in skill-based gaming tournaments, join your match, play for rewards, and track every result from one competitive platform.</p>
+      <div class="hero-buttons">
+        <a href="tournaments.html" class="btn btn-primary btn-lg">VIEW TOURNAMENTS</a>
+        <a href="#how-it-works" class="btn btn-outline btn-lg">HOW IT WORKS</a>
+      </div>
+      <div class="hero-features">
+        <div class="hero-feature">
+          <span class="feature-icon">🎮</span>
+          <span>Competitive Tournaments</span>
+        </div>
+        <div class="hero-feature">
+          <span class="feature-icon">📊</span>
+          <span>Live Match Status</span>
+        </div>
+        <div class="hero-feature">
+          <span class="feature-icon">🏆</span>
+          <span>Transparent Rewards</span>
+        </div>
+        <div class="hero-feature">
+          <span class="feature-icon">🛡️</span>
+          <span>Fair Play Rules</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Tournaments Section -->
+  <section class="section" id="live-tournaments">
+    <div class="container">
+      <div class="section-header">
+        <h2>LIVE TOURNAMENTS</h2>
+        <p>Choose your mode. Join the competition.</p>
+      </div>
+      <div class="filter-bar">
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filter="all" onclick="handleFilterClick('all')">All</button>
+          <button class="filter-tab" data-filter="CS" onclick="handleFilterClick('CS')">CS</button>
+          <button class="filter-tab" data-filter="BR" onclick="handleFilterClick('BR')">BR</button>
+          <button class="filter-tab" data-filter="upcoming" onclick="handleFilterClick('upcoming')">Upcoming</button>
+          <button class="filter-tab" data-filter="waiting" onclick="handleFilterClick('waiting')">Waiting</button>
+          <button class="filter-tab" data-filter="live" onclick="handleFilterClick('live')">Live</button>
+          <button class="filter-tab" data-filter="completed" onclick="handleFilterClick('completed')">Completed</button>
+        </div>
+        <div class="filter-search">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="tournament-search" placeholder="Search tournaments..." oninput="handleSearch(this.value)">
+        </div>
+      </div>
+      <div id="tournaments-grid">
+        <div class="empty-state">
+          <div class="empty-icon">🎮</div>
+          <h3 data-i18n="empty.tournaments">NO TOURNAMENTS AVAILABLE</h3>
+          <p data-i18n="empty.tournaments_sub">There are currently no tournaments available. Check back soon for new competitions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section class="section" id="how-it-works" style="background: var(--bg-secondary);">
+    <div class="container">
+      <div class="section-header">
+        <h2>HOW IT WORKS</h2>
+        <p>Simple steps to start competing</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-number">1</div>
+          <h4 data-i18n="nav.create_account">Create Account</h4>
+          <p>Create your BooyahX account.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">2</div>
+          <h4>Get Coins</h4>
+          <p>Add Coins using available payment methods.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">3</div>
+          <h4>Select</h4>
+          <p>Choose your preferred tournament.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">4</div>
+          <h4>Join & Wait</h4>
+          <p>Join the tournament and wait for the match.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">5</div>
+          <h4>Play</h4>
+          <p>Compete according to the tournament rules.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">6</div>
+          <h4>Result</h4>
+          <p>Check your result and eligible reward.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Coins Section -->
+  <section class="section" id="coins">
+    <div class="container">
+      <div class="section-header">
+        <h2>COINS</h2>
+        <p>Coins are the platform's tournament currency used for tournament entries and eligible rewards.</p>
+        <p style="margin-top: var(--space-sm); font-size: 0.875rem; color: var(--text-muted);">Standard reference: 1 Coin = Rs. 5 (Package pricing may differ)</p>
+      </div>
+      <div class="coins-grid">
+        <div class="coin-package">
+          <div class="package-coins">50 Coins</div>
+          <div class="package-price">Rs. 200</div>
+          <a href="wallet.html" class="btn btn-outline btn-block">GET COINS</a>
+        </div>
+        <div class="coin-package popular">
+          <div class="package-coins">100 Coins</div>
+          <div class="package-price">Rs. 450</div>
+          <a href="wallet.html" class="btn btn-primary btn-block">GET COINS</a>
+        </div>
+        <div class="coin-package">
+          <div class="package-coins">150 Coins</div>
+          <div class="package-price">Rs. 700</div>
+          <a href="wallet.html" class="btn btn-outline btn-block">GET COINS</a>
+        </div>
+        <div class="coin-package">
+          <div class="package-coins">200 Coins</div>
+          <div class="package-price">Rs. 1000</div>
+          <a href="wallet.html" class="btn btn-outline btn-block">GET COINS</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Upcoming Tournaments -->
+  <section class="section" style="background: var(--bg-secondary);">
+    <div class="container">
+      <div class="section-header">
+        <h2>UPCOMING TOURNAMENTS</h2>
+        <p>Get ready for the next competition</p>
+      </div>
+      <div class="empty-state">
+        <div class="empty-icon">📅</div>
+        <h3 data-i18n="empty.upcoming">NO UPCOMING TOURNAMENTS</h3>
+        <p data-i18n="empty.upcoming_sub">There are currently no upcoming tournaments. Check back soon for new competitions.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Crazy Events Section -->
+  <section class="section" id="events">
+    <div class="container">
+      <div class="section-header">
+        <h2>CRAZY EVENTS</h2>
+        <p>Special and limited-time competitions</p>
+      </div>
+      <div class="empty-state">
+        <div class="empty-icon">🎉</div>
+        <h3 data-i18n="empty.events">NO EVENTS AVAILABLE</h3>
+        <p data-i18n="empty.events_sub">There are currently no active or upcoming events. Check back soon for new competitions.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Community / Official links -->
+  <section class="section" style="background: var(--bg-secondary);">
+    <div class="container">
+      <div class="section-header">
+        <h2 data-i18n="community.title">COMMUNITY</h2>
+        <p data-i18n="community.sub">Follow BooyahX for official updates, announcements and new content.</p>
+      </div>
+      <div class="grid grid-2" style="max-width: 640px; margin: 0 auto;">
+        <div class="card" style="text-align: center;">
+          <div style="margin-bottom: var(--space-sm);"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" style="width: 2.25rem; height: 2.25rem; fill: #25D366;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></div>
+          <h4>BooyahX WhatsApp Channel</h4>
+          <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: var(--space-md);" data-i18n="community.whatsapp_desc">Official announcements, updates, tournament news and events.</p>
+          <a href="https://whatsapp.com/channel/0029Vb9Ify09WtC892wVPa30" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm btn-block" aria-label="BooyahX WhatsApp Channel (opens in a new tab)" data-i18n="community.whatsapp_btn">WhatsApp Channel</a>
+        </div>
+        <div class="card" style="text-align: center;">
+          <div style="margin-bottom: var(--space-sm);"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" style="width: 2.25rem; height: 2.25rem; fill: #FF0000;"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></div>
+          <h4>The Tech Guider 01</h4>
+          <p style="font-size: 0.8125rem; color: var(--text-muted); margin-bottom: var(--space-md);" data-i18n="community.youtube_desc">Official videos, tutorials and platform updates.</p>
+          <a href="https://www.youtube.com/@thetechguider01" target="_blank" rel="noopener noreferrer" class="btn btn-outline btn-sm btn-block" aria-label="The Tech Guider 01 on YouTube (opens in a new tab)" data-i18n="community.youtube_btn">YouTube</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Credits Section -->
+  <section class="section" id="credits">
+    <div class="container">
+      <div class="credits-section">
+        <div class="credits-logo">BX</div>
+        <h2>BOOYAHX</h2>
+        <p class="credits-tagline">ENTER. COMPETE. CONQUER.</p>
+        <div class="credits-grid">
+          <div class="credit-item">
+            <div class="credit-label">Studio</div>
+            <div class="credit-value">MidNiGht</div>
+          </div>
+          <div class="credit-item">
+            <div class="credit-label">Author</div>
+            <div class="credit-value">YUTA & Kenta</div>
+          </div>
+          <div class="credit-item">
+            <div class="credit-label">Idea</div>
+            <div class="credit-value">Kenta</div>
+          </div>
+          <div class="credit-item">
+            <div class="credit-label">Worked by</div>
+            <div class="credit-value">Yuta</div>
+          </div>
+          <div class="credit-item">
+            <div class="credit-label">Developer</div>
+            <div class="credit-value">YUTA</div>
+          </div>
+          <div class="credit-item">
+            <div class="credit-label">Owner</div>
+            <div class="credit-value">Kenta</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <a href="index.html" class="nav-brand">
+            <span class="logo-icon">BX</span>
+            BOOYAHX
+          </a>
+          <p>ENTER. COMPETE. CONQUER.</p>
+          <p>Premium competitive gaming tournament platform.</p>
+          <div class="footer-social">
+            <a href="https://whatsapp.com/channel/0029Vb9Ify09WtC892wVPa30" target="_blank" rel="noopener noreferrer" aria-label="BooyahX WhatsApp Channel (opens in a new tab)"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg></a>
+            <a href="https://www.youtube.com/@thetechguider01" target="_blank" rel="noopener noreferrer" aria-label="The Tech Guider 01 on YouTube (opens in a new tab)"><svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: currentColor;"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg></a>
+          </div>
+        </div>
+        <div class="footer-column">
+          <h5>Platform</h5>
+          <ul>
+            <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+            <li><a href="tournaments.html" data-i18n="nav.tournaments">Tournaments</a></li>
+            <li><a href="events.html" data-i18n="nav.events">Events</a></li>
+            <li><a href="news.html" data-i18n="nav.news">News</a></li>
+            <li><a href="updates.html" data-i18n="nav.updates">Updates</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h5>Information</h5>
+          <ul>
+            <li><a href="about.html" data-i18n="nav.about">About</a></li>
+            <li><a href="rules.html" data-i18n="nav.rules">Rules</a></li>
+            <li><a href="support.html" data-i18n="nav.support">Support</a></li>
+            <li><a href="#">Privacy</a></li>
+            <li><a href="#">Terms</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h5>Account</h5>
+          <ul>
+            <li><a href="signin.html" data-i18n="nav.signin">Sign In</a></li>
+            <li><a href="signup.html" data-i18n="nav.create_account">Create Account</a></li>
+            <li><a href="profile.html" data-i18n="nav.profile">Profile</a></li>
+            <li><a href="wallet.html" data-i18n="nav.wallet">Wallet</a></li>
+            <li><a href="settings.html" data-i18n="nav.settings">Settings</a></li>
+          </ul>
+        </div>
+        <div class="footer-column">
+          <h5>Channels</h5>
+          <ul>
+            <li><a href="https://whatsapp.com/channel/0029Vb9Ify09WtC892wVPa30" target="_blank" rel="noopener noreferrer" aria-label="BooyahX WhatsApp Channel (opens in a new tab)">BooyahX WhatsApp Channel</a></li>
+            <li><a href="https://www.youtube.com/@thetechguider01" target="_blank" rel="noopener noreferrer" aria-label="The Tech Guider 01 on YouTube (opens in a new tab)">The Tech Guider 01</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 BooyahX. All rights reserved.</p>
+        <p>ENTER. COMPETE. CONQUER.</p>
+      </div>
+      <div class="footer-credits">
+        <p><strong>Studio:</strong> MidNiGht &nbsp;|&nbsp; <strong>Author:</strong> YUTA & Kenta &nbsp;|&nbsp; <strong>Idea:</strong> Kenta</p>
+        <p><strong>Worked by:</strong> Yuta &nbsp;|&nbsp; <strong>Developer:</strong> YUTA &nbsp;|&nbsp; <strong>Owner:</strong> Kenta</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/i18n.js"></script>
+  <script src="js/data-service.js"></script>
+    <script src="js/public-content.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

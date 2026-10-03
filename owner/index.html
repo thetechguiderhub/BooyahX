@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Owner Dashboard — BOOYAHX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+  <nav class="navbar" id="navbar">
+    <div class="container-wide">
+      <a href="../index.html" class="nav-brand">
+        <span class="logo-icon">BX</span>
+        BOOYAHX
+      </a>
+      <div class="nav-actions">
+        <span style="font-size: 0.875rem; color: var(--text-muted);">Owner Dashboard</span>
+        <a href="../index.html" class="btn btn-outline btn-sm">View Site</a>
+        <a href="../index.html" class="btn btn-secondary btn-sm">Logout</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="owner-layout">
+    <aside class="owner-sidebar">
+      <div class="sidebar-header">
+        <h3>⚙️ Owner <span class="owner-badge">Admin</span></h3>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="index.html" class="active"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="tournaments.html"><span class="nav-icon">🎮</span> Tournaments</a>
+        <a href="results.html"><span class="nav-icon">🏆</span> Results</a>
+        <a href="deposits.html"><span class="nav-icon">💳</span> Deposits</a>
+        <a href="withdrawals.html"><span class="nav-icon">💰</span> Withdrawals</a>
+        <a href="news.html"><span class="nav-icon">📰</span> News</a>
+        <a href="updates.html"><span class="nav-icon">🔄</span> Updates</a>
+        <a href="events.html"><span class="nav-icon">🎉</span> Events</a>
+        <a href="users.html"><span class="nav-icon">👥</span> Users</a>
+        <a href="reports.html"><span class="nav-icon">🚨</span> Reports</a>
+        <a href="settings.html"><span class="nav-icon">⚙️</span> Settings</a>
+        <a href="audit.html"><span class="nav-icon">📋</span> Audit Logs</a>
+      </nav>
+    </aside>
+
+    <main class="owner-main">
+      <div class="owner-header">
+        <h1>Dashboard Overview</h1>
+        <span style="color: var(--text-muted); font-size: 0.875rem;">Last updated: Just now</span>
+      </div>
+
+      <div class="stats-grid" style="margin-bottom: var(--space-2xl);">
+        <div class="stat-card">
+          <div class="stat-icon" style="background: var(--accent-glow); color: var(--accent);">👥</div>
+          <div class="stat-value">1,248</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(239, 68, 68, 0.15); color: var(--danger);">🔴</div>
+          <div class="stat-value">3</div>
+          <div class="stat-label">Live Tournaments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(59, 130, 246, 0.15); color: var(--info);">📅</div>
+          <div class="stat-value">12</div>
+          <div class="stat-label">Upcoming Tournaments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">✅</div>
+          <div class="stat-value">156</div>
+          <div class="stat-label">Completed Tournaments</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--warning);">⏳</div>
+          <div class="stat-value">8</div>
+          <div class="stat-label">Pending Deposits</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: var(--warning);">⏳</div>
+          <div class="stat-value">5</div>
+          <div class="stat-label">Pending Withdrawals</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: var(--success);">💰</div>
+          <div class="stat-value">45,230</div>
+          <div class="stat-label">Coins Issued</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background: var(--accent-glow); color: var(--accent);">🎉</div>
+          <div class="stat-value">4</div>
+          <div class="stat-label">Active Events</div>
+        </div>
+      </div>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <h3 style="margin-bottom: var(--space-lg);">Recent Tournaments</h3>
+          <div class="transaction-list">
+            <div class="transaction-item">
+              <div class="tx-info">
+                <div class="tx-icon">🎮</div>
+                <div class="tx-details">
+                  <h5>BR #001</h5>
+                  <p>Waiting • 42/49 players</p>
+                </div>
+              </div>
+              <span class="status-badge status-waiting"><span class="status-dot"></span>Waiting</span>
+            </div>
+            <div class="transaction-item">
+              <div class="tx-info">
+                <div class="tx-icon">🎮</div>
+                <div class="tx-details">
+                  <h5>CS #002</h5>
+                  <p>Live • 8/8 players</p>
+                </div>
+              </div>
+              <span class="status-badge status-live"><span class="status-dot"></span>Live</span>
+            </div>
+            <div class="transaction-item">
+              <div class="tx-info">
+                <div class="tx-icon">🎮</div>
+                <div class="tx-details">
+                  <h5>BR #003</h5>
+                  <p>Completed • 49/49 players</p>
+                </div>
+              </div>
+              <span class="status-badge status-completed"><span class="status-dot"></span>Completed</span>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom: var(--space-lg);">Recent Users</h3>
+          <div class="transaction-list">
+            <div class="transaction-item">
+              <div class="tx-info">
+                <div class="tx-icon">👤</div>
+                <div class="tx-details">
+                  <h5>player_one</h5>
+                  <p>Joined Sep 28, 2026</p>
+                </div>
+              </div>
+              <span class="status-badge status-completed"><span class="status-dot"></span>Active</span>
+            </div>
+            <div class="transaction-item">
+              <div class="tx-info">
+                <div class="tx-icon">👤</div>
+                <div class="tx-details">
+                  <h5>gamer_pro</h5>
+                  <p>Joined Sep 27, 2026</p>
+                </div>
+              </div>
+              <span class="status-badge status-completed"><span class="status-dot"></span>Active</span>
+            </div>
+            <div class="transaction-item">
+              <div class="tx-info">
+                <div class="tx-icon">👤</div>
+                <div class="tx-details">
+                  <h5>night_hawk</h5>
+                  <p>Joined Sep 26, 2026</p>
+                </div>
+              </div>
+              <span class="status-badge status-completed"><span class="status-dot"></span>Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/i18n.js"></script>
+  <script src="../js/data-service.js"></script>
+  <script src="../js/main.js"></script>
+</body>
+</html>
