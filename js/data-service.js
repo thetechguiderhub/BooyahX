@@ -126,6 +126,14 @@ const DataService = (() => {
     status: () => get('/auth/oauth/status')
   };
 
+  // ---------- MEMBERS ----------
+  const Members = {
+    all: () => get('/users'),
+    search: q => get('/users/search', { q }),
+    getById: id => get(`/users/${encodeURIComponent(id)}`),
+    getProfile: id => get(`/users/${encodeURIComponent(id)}/profile`)
+  };
+
   // Moderator dashboard (scoped moderator.* permissions; server-enforced)
   const Moderator = {
     overview: () => get('/moderator/overview'),

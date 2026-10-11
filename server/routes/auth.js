@@ -319,4 +319,11 @@ module.exports = function authRoutes(app, ctx) {
       serverError(res, err);
     }
   });
-};
+
+  // ---------- USERS (public list for Members system) ----------
+  app.get('/api/users', (req, res) => {
+    const rows = db.prepare('SELECT id, username, role FROM users ORDER BY role, username').all();
+    res.json({ users: rows });
+  });
+
+  };

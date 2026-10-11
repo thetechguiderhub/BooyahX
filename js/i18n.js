@@ -28,6 +28,7 @@ const I18n = (() => {
       'nav.signout': 'Sign Out',
       'nav.achievements': 'Achievements',
       'nav.teams': 'Teams',
+      'nav.members': 'Members',
       'nav.about': 'About',
       'nav.rules': 'Rules',
       'nav.settings': 'Settings',
@@ -149,6 +150,8 @@ const I18n = (() => {
       'empty.achievements_sub': 'Achievement definitions appear here once configured.',
       'empty.teams': 'NO TEAMS AVAILABLE',
       'empty.teams_sub': 'Teams appear here once players create them.',
+      'empty.members': 'NO MEMBERS FOUND',
+      'empty.members_sub': 'Registered members will appear here.',
       'empty.reports': 'NO REPORTS',
       'empty.search': 'NO RESULTS FOUND',
 
